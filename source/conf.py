@@ -25,7 +25,7 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.pngmath', 'sphinx.ext.mathjax']
+extensions = ['sphinx.ext.pngmath']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -91,7 +91,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'haiku'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -103,7 +103,7 @@ html_theme = 'default'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+html_title = 'Optimizing Software Occlusion Culling'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -164,7 +164,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'OptimizingSoftwareOcclusionCullingdoc'
+htmlhelp_basename = 'OptimizingSoftwareOcclusionCulling'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -183,7 +183,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'OptimizingSoftwareOcclusionCulling.tex', u'Optimizing Software Occlusion Culling Documentation',
+  ('index', 'OptimizingSoftwareOcclusionCulling.tex', u'Optimizing Software Occlusion Culling',
    u'Fabian Giesen', 'manual'),
 ]
 
@@ -213,7 +213,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'optimizingsoftwareocclusionculling', u'Optimizing Software Occlusion Culling Documentation',
+    ('index', 'optimizingsoftwareocclusionculling', u'Optimizing Software Occlusion Culling',
      [u'Fabian Giesen'], 1)
 ]
 
@@ -227,7 +227,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'OptimizingSoftwareOcclusionCulling', u'Optimizing Software Occlusion Culling Documentation',
+  ('index', 'OptimizingSoftwareOcclusionCulling', u'Optimizing Software Occlusion Culling',
    u'Fabian Giesen', 'OptimizingSoftwareOcclusionCulling', 'One line description of project.',
    'Miscellaneous'),
 ]

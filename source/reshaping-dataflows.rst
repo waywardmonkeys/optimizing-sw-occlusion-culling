@@ -4,8 +4,6 @@ Reshaping dataflows
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 Welcome back! So far, we've spent quite some time "zoomed in" on various
 components of the Software Occlusion Culling demo, looking at various
 micro-architectural pitfalls and individual loops. In the last two

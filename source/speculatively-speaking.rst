@@ -4,8 +4,6 @@ Speculatively speaking
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 Welcome back! Today, it's time to take a closer look at the triangle
 binning code, which we've only seen mentioned briefly so far, and we're
 going to see a few more pitfalls that all relate to `speculative

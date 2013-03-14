@@ -4,8 +4,6 @@ The barycentric conspiracy
 :author: Fgiesen
 :category: Maths
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 And welcome back to my impromptu optimization series. Today, we won't
 see a single line of code, nor a profiler screenshot. That's because our
 next subject is the triangle rasterizer, and we better brush up on our

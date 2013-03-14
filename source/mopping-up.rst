@@ -4,8 +4,6 @@ Mopping up
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 Welcome back! This post is going to be slightly different from the
 others. So far, I've attempted to group the material thematically, so
 that each post has a coherent theme (to a first-order approximation,

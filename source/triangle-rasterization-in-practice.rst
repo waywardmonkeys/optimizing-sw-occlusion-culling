@@ -4,8 +4,6 @@ Triangle rasterization in practice
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 Welcome back! The :doc:`previous post <the-barycentric-conspiracy>`
 gave us a lot of theoretical
 groundwork on triangles. This time, let's turn it into a working

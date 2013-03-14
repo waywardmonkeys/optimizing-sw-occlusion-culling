@@ -4,8 +4,6 @@ Depth buffers done quick, part 2
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 Welcome back! At the end of the :doc:`last post <depth-buffers-done-quick-part-1>`,
 we had just finished doing a first pass over the depth buffer rendering
 loops. Unfortunately, the first version of that post listed a final rendering

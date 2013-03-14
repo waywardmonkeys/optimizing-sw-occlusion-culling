@@ -4,8 +4,6 @@ Cores don't like to share
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 Two posts ago, I explained write combining and used a real-world example
 to show how badly it can go wrong if you're not careful. The last part
 was an out-of-turn rant about some string and memory management insanity

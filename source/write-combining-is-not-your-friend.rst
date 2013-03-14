@@ -4,8 +4,6 @@ Write combining is not your friend
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 Most memory you deal with on a daily basis is cached; on CPUs, it's
 usually write-back cached. While dealing with processor caches can be
 counter-intuitive, caching works well most of the time, and it's mostly

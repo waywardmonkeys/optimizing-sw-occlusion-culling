@@ -4,8 +4,6 @@ Optimizing the basic rasterizer
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 :doc:`Last time <triangle-rasterization-in-practice>`, we saw how to
 write a simple triangle rasterizer, analyzed its behavior with regard
 to integer overflows, and discussed how to modify it to incorporate

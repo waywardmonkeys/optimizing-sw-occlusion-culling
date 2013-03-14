@@ -4,8 +4,6 @@ The care and feeding of worker threads, part 2
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 In the :doc:`previous post <care-and-feeding-of-worker-threads-part-1>`,
 we took a closer look at what our worker
 threads were doing and spent some time load-balancing the depth buffer

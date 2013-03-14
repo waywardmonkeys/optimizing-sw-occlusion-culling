@@ -4,8 +4,6 @@ A string processing rant
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 Rants are not usually the style of this blog, but this one I just don't
 want to keep in. So if you're curious, the actual information content of
 this post will be as follows: C string handling functions kinda suck. So

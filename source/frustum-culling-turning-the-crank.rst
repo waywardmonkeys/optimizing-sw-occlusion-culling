@@ -4,8 +4,6 @@ Frustum culling: turning the crank
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 In the past few posts, we've been looking at Intel's `Software Occlusion
 Culling sample`_. This post is going to be a bit shorter than the others
 so far. This has two reasons: first, next up is the rasterizer. It turns

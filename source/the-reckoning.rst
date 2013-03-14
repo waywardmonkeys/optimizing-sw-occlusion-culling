@@ -4,8 +4,6 @@ Optimizing Software Occlusion Culling: The Reckoning
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 Welcome back! Last time, I promised to end the series with a bit of
 reflection on the results. So, time to find out how far we've come!
 

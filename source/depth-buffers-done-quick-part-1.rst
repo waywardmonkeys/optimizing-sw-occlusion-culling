@@ -4,8 +4,6 @@ Depth buffers done quick, part 1
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 Welcome back to yet another post on my series about Intel's `Software
 Occlusion Culling`_ demo. The past few posts were about triangle
 rasterization in general; at the end of the previous post, we saw how

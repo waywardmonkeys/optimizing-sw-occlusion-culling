@@ -4,8 +4,6 @@ Fixing cache issues, the lazy way
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 Last time, we ended on a bit of a cliffhanger. We'll continue right
 where we left off, but first, I want to get a few things out of the way.
 

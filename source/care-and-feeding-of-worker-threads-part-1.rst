@@ -4,8 +4,6 @@ The care and feeding of worker threads, part 1
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go :doc:`here <index>` for the index.*
-
 It's time for another post! After all the time I've spent on squeezing
 about 20% out of the depth rasterizer, I figured it was time to change
 gears and look at something different again. But before we get started

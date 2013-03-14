@@ -14,10 +14,6 @@ look at the rest of the system.
 A bug
 ~~~~~
 
-.. raw:: html
-
-   </p>
-
 But first, it's time to look at a bug that I inadvertently introduced
 last time: If you tried running the code from last time, you might have
 noticed that toggling the "Multi Tasking" checkbox off and back on
@@ -31,17 +27,9 @@ occluders, which we moved from the "vertex transform" to the "frustum
 cull" pass last time, used stale information. The relevant piece of the
 main loop is this:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     mpCamera->SetNearPlaneDistance(1.0f);mpCamera->SetFarPlaneDistance(gFarClipDistance);mpCamera->Update();// If view frustum culling is enabled then determine which occluders// and occludees are inside the view frustum and run the software// occlusion culling on only the those modelsif(mEnableFCulling){    renderParams.mpCamera = mpCamera;    mpDBR->IsVisible(mpCamera);    mpAABB->IsInsideViewFrustum(mpCamera);}// if software occlusion culling is enabledif(mEnableCulling){    mpCamera->SetNearPlaneDistance(gFarClipDistance);    mpCamera->SetFarPlaneDistance(1.0f);    mpCamera->Update();    // Set the camera transforms so that the occluders can    // be transformed     mpDBR->SetViewProj(mpCamera->GetViewMatrix(),        (float4x4*)mpCamera->GetProjectionMatrix());    // (clear, render depth and perform occlusion test here)    mpCamera->SetNearPlaneDistance(1.0f);    mpCamera->SetFarPlaneDistance(gFarClipDistance);    mpCamera->Update();}
-
-.. raw:: html
-
-   </p>
 
 Note how the call that actually updates the view-projection matrix
 (highlighted in red) runs *after* the frustum-culling pass. That's the
@@ -62,10 +50,6 @@ it should be now that we're using these matrices earlier.
 Some extra instrumentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 In some of the previous posts, we already looked at the frustum culling
 logic; this time, I also added another timer that measures our total
 culling time, including frustum culling and everything related to
@@ -80,23 +64,7 @@ make changes. I'll use separate tables for the individual measurements:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -107,14 +75,6 @@ Total cull time
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -188,35 +148,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -227,14 +163,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -308,23 +236,7 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -332,31 +244,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
    <table>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -367,14 +259,6 @@ Render depth
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -448,35 +332,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -487,14 +347,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -568,23 +420,7 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -592,31 +428,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
    <table>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -627,14 +443,6 @@ Depth test
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -708,35 +516,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -747,14 +531,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -828,38 +604,14 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
    </table>
 
-.. raw:: html
-
-   </p>
-
 Load balancing depth testing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 Last time, we saw two fundamentally different ways to balance our
 multi-threaded workloads. The first was to simply split the work into N
@@ -935,31 +687,15 @@ choice!) models at a time; an idea similar to the disk striping used for
 RAIDs. It turns out to be a really easy change to make: just replace the
 original loop
 
-.. raw:: html
-
-   <p>
-
 ::
 
     for(UINT i = start; i < end; i++){    // process model i}
 
-.. raw:: html
-
-   </p>
-
 with the only marginally more complicated
-
-.. raw:: html
-
-   <p>
 
 ::
 
     static const UINT kChunkSize = 64;for(UINT base = taskId*kChunkSize; base < mNumModels;        base += mNumDepthTestTasks * kChunkSize){    UINT end = min(base + kChunkSize, mNumModels);    for(UINT i = base; i < end; i++)    {        // process model i    }}
-
-.. raw:: html
-
-   </p>
 
 and we're done. Let's see the change:
 
@@ -971,23 +707,7 @@ and we're done. Let's see the change:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -998,14 +718,6 @@ Depth test
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1079,35 +791,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1118,14 +806,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1199,35 +879,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1238,14 +894,6 @@ Striped
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1319,23 +967,7 @@ Striped
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1343,31 +975,11 @@ Striped
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
    <table>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1378,14 +990,6 @@ Total cull time
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1459,35 +1063,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1498,14 +1078,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1579,35 +1151,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1618,14 +1166,6 @@ Striped depth test
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1699,31 +1239,11 @@ Striped depth test
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 That's pretty good for just changing a few lines. Here's the
 corresponding Telemetry screenshot:
@@ -1737,10 +1257,6 @@ enough for now.
 One bottleneck remaining
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 At this point, we're in pretty good shape as far as worker thread
 utilization is concerned, but there's one big serial chunk still
 remaining, right between frustum culling and vertex transformation:
@@ -1751,17 +1267,9 @@ Clearing the depth buffer. This is about 0.4ms, about a third of the
 time we spend depth testing, all tracing back to a single line in the
 code:
 
-.. raw:: html
-
-   <p>
-
 ::
 
         // Clear the depth buffer    mpCPURenderTargetPixels = (UINT*)mpCPUDepthBuf;    memset(mpCPURenderTargetPixels, 0, SCREENW * SCREENH * 4);
-
-.. raw:: html
-
-   </p>
 
 Luckily, this one's really easy to fix. We could try and turn this into
 another separate group of tasks, but there's no need: we already have a
@@ -1782,23 +1290,7 @@ simple enough - but as usual, I'll give you the results:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1809,14 +1301,6 @@ Total cull time
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1890,35 +1374,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1929,14 +1389,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2010,35 +1462,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2049,14 +1477,6 @@ Striped depth test
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2130,35 +1550,11 @@ Striped depth test
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2169,14 +1565,6 @@ Clear in rasterizer
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2250,23 +1638,7 @@ Clear in rasterizer
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2274,31 +1646,11 @@ Clear in rasterizer
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
    <table>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2309,14 +1661,6 @@ Render depth
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2390,35 +1734,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2429,14 +1749,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2510,35 +1822,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2549,14 +1837,6 @@ Clear in rasterizer
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2630,31 +1910,11 @@ Clear in rasterizer
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 So even though we take a bit of a hit in rasterization latency, we still
 get a very solid 0.2ms win in the total cull time. Again, a very good
@@ -2662,10 +1922,6 @@ pay-off considering the amount of work involved.
 
 Summary
 ~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 A lot of the posts in this series so far either needed
 conceptual/algorithmic leaps or at least some detailed

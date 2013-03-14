@@ -53,10 +53,6 @@ I've decided to write up some guidelines.
 Where is write combining used?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 I'm only going to talk about graphics here. For all I know,
 write-combining might be used for lots of other things, but I would
 assume that even if that is true, graphics is the only mainstream
@@ -71,10 +67,6 @@ rapid uploads usually are - doubly so if you're requesting a
 
 What happens if you read from write-combined memory?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 Sadly, the answer is not "reading from write-combined memory isn't
 allowed". This would be much simpler and less error-prone, but at least
@@ -103,32 +95,16 @@ for us, this function runs at an absolutely appalling 9.721 clock cycles
 per instruction (CPI Rate)! Now it turns out that a large fraction is
 due to these innocent-looking lines that write to a constant buffer:
 
-.. raw:: html
-
-   <p>
-
 ::
 
         pCb = (CPUTModelConstantBuffer*)mapInfo.pData;    pCb->World               = world;    pCb->ViewProjection      = view * projection;    pCb->WorldViewProjection = world * pCb->ViewProjection;
 
-.. raw:: html
-
-   </p>
-
 Note how ``pCb->ViewProjection`` is used as an argument for a matrix
 multiply in the last line. Now, here's the simple fix:
-
-.. raw:: html
-
-   <p>
 
 ::
 
         XMMATRIX viewProj = view * projection;    pCb = (CPUTModelConstantBuffer*)mapInfo.pData;    pCb->World               = world;    pCb->ViewProjection      = viewProj;    pCb->WorldViewProjection = world * viewProj;
-
-.. raw:: html
-
-   </p>
 
 And here's the corresponding VTune profile:
 
@@ -143,10 +119,6 @@ improvement over the 9.7 we saw earlier.
 
 Other things to be careful about
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 Okay, so not reading is an important point. What else? Well, it depends
 on the processor. Early x86s had fairly restrictive rules about write
@@ -182,10 +154,6 @@ left nothing out.
 Conclusion
 ~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Write combining is a powerful technique to accelerate writes to graphics
 memory, but it's very easy to misuse in a way that causes severe
 performance degradation. Worse, because things only get slow but don't
@@ -203,10 +171,6 @@ find them. Here's the summary:
 -  *Don't leave holes*. Always write large, contiguous ranges.
 -  *Check the rules for your target architecture*. There might be
    additional alignment and access width limitations.
-
-.. raw:: html
-
-   </p>
 
 If you live by these rules, write-combining can be a powerful ally in
 writing high-performance graphics code. But never a friend - it *will*

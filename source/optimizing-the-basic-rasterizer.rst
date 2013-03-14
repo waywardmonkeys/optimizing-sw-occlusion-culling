@@ -15,10 +15,6 @@ get one thing out of the way:
 Why this kind of algorithm?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 The algorithm we're using basically loops over a bunch of candidate
 pixels and checks whether they're inside the triangle. This is not the
 only way to render triangles, and if you've written any software
@@ -85,10 +81,6 @@ Luckily, we've seen everything we need to do that already.
 Simplifying the rasterizer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 If you go back to `"The barycentric conspiracy"`_, you'll notice that we
 already derived an alternative formulation of the edge functions by
 rearranging and simplifying the determinant expression:
@@ -129,17 +121,9 @@ In our basic triangle rasterization loop, this turns into something like
 this: (I'll keep using the original ``orient2d`` for the initial setup
 so we can see the similarity):
 
-.. raw:: html
-
-   <p>
-
 ::
 
         // Bounding box and clipping as before    // ...    // Triangle setup    int A01 = v0.y - v1.y, B01 = v1.x - v0.x;    int A12 = v1.y - v2.y, B12 = v2.x - v1.x;    int A20 = v2.y - v0.y, B20 = v0.x - v2.x;    // Barycentric coordinates at minX/minY corner    Point2D p = { minX, minY };    int w0_row = orient2d(v1, v2, p);    int w1_row = orient2d(v2, v0, p);    int w2_row = orient2d(v0, v1, p);    // Rasterize    for (p.y = minY; p.y <= maxY; p.y++) {        // Barycentric coordinates at start of row        int w0 = w0_row;        int w1 = w1_row;        int w2 = w2_row;        for (p.x = minX; p.x <= maxX; p.x++) {            // If p is on or inside all edges, render pixel.            if (w0 >= 0 && w1 >= 0 && w2 >= 0)                renderPixel(p, w0, w1, w2);                 // One step to the right            w0 += A12;            w1 += A20;            w2 += A01;        }        // One row step        w0_row += B12;        w1_row += B20;        w2_row += B01;    }
-
-.. raw:: html
-
-   </p>
 
 And just like that, we're down to three additions per pixel. Want proper
 fill rules? As we saw last time, we can do that using a single bias that
@@ -167,17 +151,9 @@ sign bit, and not something slightly more complicated like ``> 0``. Why
 do we care? Because it allows us to rewrite the three sign tests like
 this:
 
-.. raw:: html
-
-   <p>
-
 ::
 
         // If p is on or inside all edges, render pixel.    if ((w0 | w1 | w2) >= 0)        renderPixel(p, w0, w1, w2);     
-
-.. raw:: html
-
-   </p>
 
 To understand why this works, you only need to look at the sign bits.
 Remember, if the sign bit is set in a value, that means it's negative.
@@ -191,10 +167,6 @@ prediction, although I won't bother to profile it here.
 
 Processing multiple pixels at once
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 However, as fun as squeezing individual integer instructions is, the
 main reason I cited for using this algorithm is that it's embarrassingly
@@ -213,17 +185,9 @@ that is, in groups 4 pixels wide, but only one pixel high. But before we
 do anything else, let me just pull all the per-edge setup into a single
 function:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     struct Edge {    // Dimensions of our pixel group    static const int stepXSize = 4;    static const int stepYSize = 1;    Vec4i oneStepX;    Vec4i oneStepY;    Vec4i init(const Point2D& v0, const Point2D& v1,               const Point2D& origin);};Vec4i Edge::init(const Point2D& v0, const Point2D& v1,                 const Point2D& origin){    // Edge setup    int A = v0.y - v1.y, B = v1.x - v0.x;    int C = v0.x*v1.y - v0.y*v1.x;    // Step deltas    oneStepX = Vec4i(A * stepXSize);    oneStepY = Vec4i(B * stepYSize);    // x/y values for initial pixel block    Vec4i x = Vec4i(origin.x) + Vec4i(0,1,2,3);    Vec4i y = Vec4i(origin.y);    // Edge function values at origin    return Vec4i(A)*x + Vec4i(B)*y + Vec4i(C);}
-
-.. raw:: html
-
-   </p>
 
 As said, this is the setup for one edge, but it already includes all the
 "magic" necessary to set it up for SIMD traversal. Which is really not
@@ -240,17 +204,9 @@ enough.
 With this factored out, the SIMD version for the rest of the rasterizer
 is easy enough:
 
-.. raw:: html
-
-   <p>
-
 ::
 
         // Bounding box and clipping again as before    // Triangle setup    Point2D p = { minX, minY };    Edge e01, e12, e20;    Vec4i w0_row = e12.init(v1, v2, p);    Vec4i w1_row = e20.init(v2, v0, p);    Vec4i w2_row = e01.init(v0, v1, p);    // Rasterize    for (p.y = minY; p.y <= maxY; p.y += Edge::stepYSize) {        // Barycentric coordinates at start of row        Vec4i w0 = w0_row;        Vec4i w1 = w1_row;        Vec4i w2 = w2_row;        for (p.x = minX; p.x <= maxX; p.x += Edge::stepXSize) {            // If p is on or inside all edges for any pixels,            // render those pixels.            Vec4i mask = w0 | w1 | w2;            if (any(mask >= 0))                renderPixels(p, w0, w1, w2, mask);            // One step to the right            w0 += e12.oneStepX;            w1 += e20.oneStepX;            w2 += e01.oneStepX;        }        // One row step        w0_row += e12.oneStepY;        w1_row += e20.oneStepY;        w2_row += e01.oneStepY;    }
-
-.. raw:: html
-
-   </p>
 
 There's a bunch of surface changes - our edge function values are now
 ``Vec4i``\ s instead of ints, and we now process multiple pixels at a
@@ -267,10 +223,6 @@ all! (At least I hope it wasn't. Apologies if I'm going too fast.)
 
 Next steps and a bit of perspective
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 At this point, I could spend an arbitrary amount of time tweaking our
 toy rasterizer, adding features, optimizing it and so forth, but I'll
@@ -343,10 +295,6 @@ Culling demo.
 
 A match made in Github
 ~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 I'm not going to start describing any new techniques here, but I do want
 to use the rest of this article to link up my description of the

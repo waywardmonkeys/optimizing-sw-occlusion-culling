@@ -17,10 +17,6 @@ possibly can, using the primitives we saw in the last part.
 The basic rasterizer
 ~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 As we saw last time, we can calculate edge functions (which produce
 barycentric coordinates) as a 2x2 determinant. And we also saw last time
 that we can check if a point is inside, on the edge or outside a
@@ -30,17 +26,9 @@ let's assume for now that our triangle vertex positions and point
 coordinates are given as integers too. The orientation test that
 computes the 2x2 determinant looks like this in code:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     struct Point2D {    int x, y;};int orient2d(const Point2D& a, const Point2D& b, const Point2D& c){    return (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);}
-
-.. raw:: html
-
-   </p>
 
 Now, all we have to do to rasterize our triangle is to loop over
 candidate pixels and check whether they're inside or not. We could do it
@@ -50,17 +38,9 @@ triangle are also going to be inside an axis-aligned bounding box around
 the triangle. And axis-aligned bounding boxes are both easy to compute
 and trivial to traverse. This gives:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     void drawTri(const Point2D& v0, const Point2D& v1, const Point2D& v2){    // Compute triangle bounding box    int minX = min3(v0.x, v1.x, v2.x);    int minY = min3(v0.y, v1.y, v2.y);    int maxX = max3(v0.x, v1.x, v2.x);    int maxY = max3(v0.y, v1.y, v2.y);    // Clip against screen bounds    minX = max(minX, 0);    minY = max(minY, 0);    maxX = min(maxX, screenWidth - 1);    maxY = min(maxY, screenHeight - 1);    // Rasterize    Point2D p;    for (p.y = minY; p.y <= maxY; p.y++) {        for (p.x = minX; p.x <= maxX; p.x++) {            // Determine barycentric coordinates            int w0 = orient2d(v1, v2, p);            int w1 = orient2d(v2, v0, p);            int w2 = orient2d(v0, v1, p);            // If p is on or inside all edges, render pixel.            if (w0 >= 0 && w1 >= 0 && w2 >= 0)                renderPixel(p, w0, w1, w2);                   }    }}
-
-.. raw:: html
-
-   </p>
 
 And that's it. That's a fully functional triangle rasterizer. In theory
 anyway - you need to write the ``min`` / ``max`` and ``renderPixel``
@@ -82,10 +62,6 @@ if we apply some smarts - an important distinction.
 Issues with this approach
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 All that said, let's list some problems with this initial
 implementation:
 
@@ -103,18 +79,10 @@ implementation:
    faster, and we'll get there in a bit, but of course this will make
    things more complicated.
 
-.. raw:: html
-
-   </p>
-
 I'm going to address each of these in turn.
 
 Integer overflows
 ~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 Since all the computations happen in ``orient2d``, that's the only
 expression we actually have to look at:
@@ -175,10 +143,6 @@ with no clipping most of the time.
 Sub-pixel precision
 ~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 For this point and the next, I'm only going to give a high-level
 overview, since we're not actually going to use it for our target
 application.
@@ -216,17 +180,9 @@ coordinates are now in 1/256ths of a pixel, but we still only perform
 one sample each pixel. Easy enough: (just sketching the updated main
 loop here)
 
-.. raw:: html
-
-   <p>
-
 ::
 
         static const int subStep = 256;    static const int subMask = subStep - 1;    // Round start position up to next integer multiple    // (we sample at integer pixel positions, so if our    // min is not an integer coordinate, that pixel won't    // be hit)    minX = (minX + subMask) & ~subMask;    minY = (minY + subMask) & ~subMask;    for (p.y = minY; p.y <= maxY; p.y += subStep) {        for (p.x = minX; p.x <= maxX; p.x += subStep) {            // Determine barycentric coordinates            int w0 = orient2d(v1, v2, p);            int w1 = orient2d(v2, v0, p);            int w2 = orient2d(v0, v1, p);            // If p is on or inside all edges, render pixel.            if (w0 >= 0 && w1 >= 0 && w2 >= 0)                renderPixel(p, w0, w1, w2);                   }    }
-
-.. raw:: html
-
-   </p>
 
 Simple enough, and it works just fine. Well, in theory it does, anyway -
 this code fragment is just as untested as the previous one, so be
@@ -269,10 +225,6 @@ OpenGL/D3D-style rasterizer will do, but again, I digress.
 Fill rules
 ~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 The goal of fill rules, as briefly explained earlier, is to make sure
 that when two non-overlapping triangles share an edge and you render
 both of them, each pixel gets processed only once. Now, if you look at
@@ -286,27 +238,11 @@ winding order - let's say counter-clockwise, as we've been using last
 time. Now let's look at the rules from the article I just pointed you
 to:
 
-.. raw:: html
-
-   <p>
-
-    .. raw:: html
-
-       </p>
-
     A top edge, is an edge that is exactly horizontal and is above the
     other edges.
 
     A left edge, is an edge that is not exactly horizontal and is on the
     left side of the triangle.
-
-    .. raw:: html
-
-       <p>
-
-.. raw:: html
-
-   </p>
 
 |A triangle.|
 
@@ -346,26 +282,10 @@ just one sign test, even easier than testing for a top edge!
 And now that we know how to identify which edge is which, what do we do
 with that information? Again, quoting from the D3D10 rules:
 
-.. raw:: html
-
-   <p>
-
-    .. raw:: html
-
-       </p>
-
     Any pixel center which falls inside a triangle is drawn; a pixel is
     assumed to be inside if it passes the top-left rule. The top-left
     rule is that a pixel center is defined to lie inside of a triangle
     if it lies on the top edge or the left edge of a triangle.
-
-    .. raw:: html
-
-       <p>
-
-.. raw:: html
-
-   </p>
 
 To paraphrase: if our sample point actually falls inside the triangle
 (not on an edge), we draw it no matter what. It if happens to fall on an
@@ -374,17 +294,9 @@ edge.
 
 Now, our current rasterizer code:
 
-.. raw:: html
-
-   <p>
-
 ::
 
         int w0 = orient2d(v1, v2, p);    int w1 = orient2d(v2, v0, p);    int w2 = orient2d(v0, v1, p);    // If p is on or inside all edges, render pixel.    if (w0 >= 0 && w1 >= 0 && w2 >= 0)        renderPixel(p, w0, w1, w2);           
-
-.. raw:: html
-
-   </p>
 
 Draws *all* points that fall on edges, no matter which kind - all the
 tests are for greater-or-equals to zero. That's okay for edge functions
@@ -396,31 +308,15 @@ to contemplate. Instead, we're going to use the fact that for integers,
 ``x > 0`` and ``x >= 1`` mean the same thing. Which means we can leave
 the tests as they are by first computing a per-edge offset once:
 
-.. raw:: html
-
-   <p>
-
 ::
 
       int bias0 = isTopLeft(v1, v2) ? 0 : -1;  int bias1 = isTopLeft(v2, v0) ? 0 : -1;  int bias2 = isTopLeft(v0, v1) ? 0 : -1;
 
-.. raw:: html
-
-   </p>
-
 and then changing our edge function computation slightly:
-
-.. raw:: html
-
-   <p>
 
 ::
 
         int w0 = orient2d(v1, v2, p) + bias0;    int w1 = orient2d(v2, v0, p) + bias1;    int w2 = orient2d(v0, v1, p) + bias2;    // If p is on or inside all edges, render pixel.    if (w0 >= 0 && w1 >= 0 && w2 >= 0)        renderPixel(p, w0, w1, w2);           
-
-.. raw:: html
-
-   </p>
 
 Full disclosure: this changes the barycentric coordinates we pass to
 ``renderPixel`` slightly (as does the subpixel-precision squeezing we
@@ -453,10 +349,6 @@ the net.
 
 All that's fine and good, but now how do we make it fast?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 Well, that's a big question, and - much as I hate to tell you - one that
 I will try to answer in the next post. We'll also end this brief detour

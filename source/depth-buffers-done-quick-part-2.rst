@@ -15,10 +15,6 @@ display the timing results in tables).
 Notation matters
 ~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 However, while writing that post, it became clear to me that I needed to
 do something about those damn over-long Intel SSE intrinsic names.
 Having them in regular source code is one thing, but it really sucks for
@@ -46,48 +42,24 @@ fairly basic stuff) or the modifications to the code (just glorified
 search and replace), but I will show you one before-after example to
 illustrate why I did it:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     col = _mm_add_epi32(colOffset, _mm_set1_epi32(startXx));__m128i aa0Col = _mm_mullo_epi32(aa0, col);__m128i aa1Col = _mm_mullo_epi32(aa1, col);__m128i aa2Col = _mm_mullo_epi32(aa2, col);row = _mm_add_epi32(rowOffset, _mm_set1_epi32(startYy));__m128i bb0Row = _mm_add_epi32(_mm_mullo_epi32(bb0, row), cc0);__m128i bb1Row = _mm_add_epi32(_mm_mullo_epi32(bb1, row), cc1);__m128i bb2Row = _mm_add_epi32(_mm_mullo_epi32(bb2, row), cc2);__m128i sum0Row = _mm_add_epi32(aa0Col, bb0Row);__m128i sum1Row = _mm_add_epi32(aa1Col, bb1Row);__m128i sum2Row = _mm_add_epi32(aa2Col, bb2Row);
 
-.. raw:: html
-
-   </p>
-
 turns into:
-
-.. raw:: html
-
-   <p>
 
 ::
 
     VecS32 col = colOffset + VecS32(startXx);VecS32 aa0Col = aa0 * col;VecS32 aa1Col = aa1 * col;VecS32 aa2Col = aa2 * col;VecS32 row = rowOffset + VecS32(startYy);VecS32 bb0Row = bb0 * row + cc0;VecS32 bb1Row = bb1 * row + cc1;VecS32 bb2Row = bb2 * row + cc2;VecS32 sum0Row = aa0Col + bb0Row;VecS32 sum1Row = aa1Col + bb1Row;VecS32 sum2Row = aa2Col + bb2Row;
-
-.. raw:: html
-
-   </p>
 
 I don't know about you, but I already find this *much* easier to parse
 visually, and the generated code is the same. And as soon as I had this,
 I just got rid of most of the explicit temporaries since they're never
 referenced again anyway:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     VecS32 col = VecS32(startXx) + colOffset;VecS32 row = VecS32(startYy) + rowOffset;VecS32 sum0Row = aa0 * col + bb0 * row + cc0;VecS32 sum1Row = aa1 * col + bb1 * row + cc1;VecS32 sum2Row = aa2 * col + bb2 * row + cc2;
-
-.. raw:: html
-
-   </p>
 
 And suddenly, with the ratio of syntactic noise to actual content back
 to a reasonable range, it's actually possible to see what's really going
@@ -111,23 +83,7 @@ And just to prove that it really didn't change the performance:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -138,14 +94,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -219,35 +167,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -258,14 +182,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -339,35 +255,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -378,14 +270,6 @@ End of part 1
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -459,35 +343,11 @@ End of part 1
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -498,14 +358,6 @@ Vec[SF]32
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -579,38 +431,14 @@ Vec[SF]32
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
    </table>
 
-.. raw:: html
-
-   </p>
-
 A bit more work on setup
 ~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 With that out of the way, let's spiral further outwards and have a look
 at our triangle setup code. Most of it sets up edge equations etc. for 4
@@ -619,17 +447,9 @@ we're about to actually rasterize them. Most of this code works exactly
 as we saw in `"Optimizing the basic rasterizer"`_, but there's one bit
 that performs a bit more work than necessary:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     // Compute triangle areaVecS32 triArea = A0 * xFormedFxPtPos[0].X;triArea += B0 * xFormedFxPtPos[0].Y;triArea += C0;VecF32 oneOverTriArea = VecF32(1.0f) / itof(triArea);
-
-.. raw:: html
-
-   </p>
 
 Contrary to what the comment says :), this actually computes twice the
 (signed) triangle area and is used to normalize the barycentric
@@ -640,32 +460,16 @@ determinant expression. Since the area is computed in integers, this
 gives exactly the same results with one operations less, and without the
 dependency on ``C0``:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     VecS32 triArea = B2 * A1 - B1 * A2;VecF32 oneOverTriArea = VecF32(1.0f) / itof(triArea);
 
-.. raw:: html
-
-   </p>
-
 And talking about the barycentric coordinates, there's also this part of
 the setup that is performed per triangle, not across 4 triangles:
-
-.. raw:: html
-
-   <p>
 
 ::
 
     VecF32 zz[3], oneOverW[3];for(int vv = 0; vv < 3; vv++){    zz[vv] = VecF32(xformedvPos[vv].Z.lane[lane]);    oneOverW[vv] = VecF32(xformedvPos[vv].W.lane[lane]);}VecF32 oneOverTotalArea(oneOverTriArea.lane[lane]);zz[1] = (zz[1] - zz[0]) * oneOverTotalArea;zz[2] = (zz[2] - zz[0]) * oneOverTotalArea;
-
-.. raw:: html
-
-   </p>
 
 The latter two lines perform the half-barycentric interpolation setup;
 the original code multiplied the ``zz[i]`` by ``oneOverTotalArea`` here
@@ -675,17 +479,9 @@ are really scalar computations, and we can perform them while we're
 still dealing with 4 triangles at a time! So right after the triangle
 area computation, we now do this:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     // Z setupVecF32 Z[3];Z[0] = xformedvPos[0].Z;Z[1] = (xformedvPos[1].Z - Z[0]) * oneOverTriArea;Z[2] = (xformedvPos[2].Z - Z[0]) * oneOverTriArea;
-
-.. raw:: html
-
-   </p>
 
 Which allows us to get rid of the second half of the earlier block - all
 we have to do is load ``zz`` from ``Z[vv]`` rather than
@@ -707,23 +503,7 @@ very low-effort, so why not.
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -734,14 +514,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -815,35 +587,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -854,14 +602,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -935,35 +675,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -974,14 +690,6 @@ End of part 1
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1055,35 +763,11 @@ End of part 1
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1094,14 +778,6 @@ Vec[SF]32
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1175,35 +851,11 @@ Vec[SF]32
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1214,14 +866,6 @@ Setup cleanups
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1295,40 +939,16 @@ Setup cleanups
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
    </table>
 
-.. raw:: html
-
-   </p>
-
 As said, it's minor, but a small win nonetheless.
 
 Garbage in the bins
 ~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 When I was originally performing the experiments that led to this
 series, I discovered something funny when I had the code at roughly this
@@ -1345,31 +965,15 @@ out to be quite interesting.
 So, where do these triangles with empty bounding boxes come from? The
 actual per-triangle assignments
 
-.. raw:: html
-
-   <p>
-
 ::
 
     int startXx = startX.lane[lane];int endXx   = endX.lane[lane];
 
-.. raw:: html
-
-   </p>
-
 just get their values from these vectors:
-
-.. raw:: html
-
-   <p>
 
 ::
 
     // Use bounding box traversal strategy to determine which// pixels to rasterize VecS32 startX = vmax(    vmin(        vmin(xFormedFxPtPos[0].X, xFormedFxPtPos[1].X),        xFormedFxPtPos[2].X), VecS32(tileStartX))    & VecS32(~1);VecS32 endX = vmin(    vmax(        vmax(xFormedFxPtPos[0].X, xFormedFxPtPos[1].X),        xFormedFxPtPos[2].X) + VecS32(1), VecS32(tileEndX));
-
-.. raw:: html
-
-   </p>
 
 Horrible line-breaking aside (I just need to switch to a wider layout),
 this is fairly straightforward: ``startX`` is determined as the minimum
@@ -1393,34 +997,18 @@ The relevant piece of code is
 `here <https://github.com/rygorous/intel_occlusion_cull/blob/2d1282e5/SoftwareOcclusionCulling/TransformedMeshSSE.cpp#L127>`__.
 The bounding box determination for the whole triangle looks as follows:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     VecS32 vStartX = vmax(    vmin(        vmin(xFormedFxPtPos[0].X, xFormedFxPtPos[1].X),         xFormedFxPtPos[2].X), VecS32(0));VecS32 vEndX   = vmin(    vmax(        vmax(xFormedFxPtPos[0].X, xFormedFxPtPos[1].X),        xFormedFxPtPos[2].X) + VecS32(1), VecS32(SCREENW));
-
-.. raw:: html
-
-   </p>
 
 Okay, that's basically the same we saw before, only we're clipping
 against the screen bounds not the tile bounds. And the same happens with
 Y. Nothing to see here so far, move along. But then, what does the code
 do with these bounds? Let's have a look:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     // Convert bounding box in terms of pixels to bounding box// in terms of tilesint startX = max(vStartX.lane[i]/TILE_WIDTH_IN_PIXELS, 0);int endX   = min(vEndX.lane[i]/TILE_WIDTH_IN_PIXELS,                 SCREENW_IN_TILES-1);int startY = max(vStartY.lane[i]/TILE_HEIGHT_IN_PIXELS, 0);int endY   = min(vEndY.lane[i]/TILE_HEIGHT_IN_PIXELS,                 SCREENH_IN_TILES-1);// Add triangle to the tiles or bins that the bounding box coversint row, col;for(row = startY; row <= endY; row++){    int offset1 = YOFFSET1_MT * row;    int offset2 = YOFFSET2_MT * row;    for(col = startX; col <= endX; col++)    {        // ...    }}
-
-.. raw:: html
-
-   </p>
 
 And in this loop, the triangles get added to the corresponding bins. So
 the bug must be somewhere in here. Can you figure out what's going on?
@@ -1453,17 +1041,9 @@ is somewhat awkward to express in code, and I went for the simpler
 option: just check whether the bounding rectangle is empty before we
 even do the divide.
 
-.. raw:: html
-
-   <p>
-
 ::
 
     if(vEndX.lane[i] < vStartX.lane[i] ||   vEndY.lane[i] < vStartY.lane[i]) continue;
-
-.. raw:: html
-
-   </p>
 
 And there's another problem with the code as-is: There's an off-by-one
 error. Suppose we have a triangle with ``maxX=99``. Then we'll compute
@@ -1483,23 +1063,7 @@ rasterizer sees slightly fewer triangles! Does it help?
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1510,14 +1074,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1591,35 +1147,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1630,14 +1162,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1711,35 +1235,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1750,14 +1250,6 @@ End of part 1
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1831,35 +1323,11 @@ End of part 1
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1870,14 +1338,6 @@ Vec[SF]32
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1951,35 +1411,11 @@ Vec[SF]32
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1990,14 +1426,6 @@ Setup cleanups
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2071,35 +1499,11 @@ Setup cleanups
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2110,14 +1514,6 @@ Binning fixes
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2191,41 +1587,17 @@ Binning fixes
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 Not a big improvement, but then again, this wasn't even for performance,
 it was just a regular bug fix! Always nice when they pay off this way.
 
 One more setup tweak
 ~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 With that out of the way, there's one bit of unnecessary work left in
 our triangle setup: If you look at the `current triangle setup code`_,
@@ -2244,23 +1616,7 @@ I'm just going to give you the results:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2271,14 +1627,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2352,35 +1700,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2391,14 +1715,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2472,35 +1788,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2511,14 +1803,6 @@ End of part 1
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2592,35 +1876,11 @@ End of part 1
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2631,14 +1891,6 @@ Vec[SF]32
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2712,35 +1964,11 @@ Vec[SF]32
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2751,14 +1979,6 @@ Setup cleanups
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2832,35 +2052,11 @@ Setup cleanups
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2871,14 +2067,6 @@ Binning fixes
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2952,35 +2140,11 @@ Binning fixes
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2991,14 +2155,6 @@ No fixed-pt. Z/W
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3072,41 +2228,17 @@ No fixed-pt. Z/W
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 And with that, we are - finally! - down about 0.1ms from where we ended
 the previous post.
 
 Time to profile
 ~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 Evidently, progress is slowing down. This is entirely expected; we're
 running out of easy targets. But while we've been starting intensely at
@@ -3150,23 +2282,7 @@ Is it still worthwhile? Let's try removing it.
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3177,14 +2293,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3258,35 +2366,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3297,14 +2381,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3378,35 +2454,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3417,14 +2469,6 @@ End of part 1
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3498,35 +2542,11 @@ End of part 1
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3537,14 +2557,6 @@ Vec[SF]32
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3618,35 +2630,11 @@ Vec[SF]32
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3657,14 +2645,6 @@ Setup cleanups
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3738,35 +2718,11 @@ Setup cleanups
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3777,14 +2733,6 @@ Binning fixes
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3858,35 +2806,11 @@ Binning fixes
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3897,14 +2821,6 @@ No fixed-pt. Z/W
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3978,35 +2894,11 @@ No fixed-pt. Z/W
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4017,14 +2909,6 @@ No quad early-out
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4098,31 +2982,11 @@ No quad early-out
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 And just like that, another 0.17ms evaporate. I could do this all day.
 Let's run the profiler again just to see what changed:
@@ -4136,10 +3000,6 @@ do like their code straight-line.
 
 Bonus: per-pixel increments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 There's a few more minor modifications in the most recent set of changes
 that I won't bother talking about, but there's one more that I want to
@@ -4155,49 +3015,25 @@ modifications so it's easier to "opt out" from.
 That said, the change itself is really easy to make now: only do our
 current computation
 
-.. raw:: html
-
-   <p>
-
 ::
 
     VecF32 depth = zz[0] + itof(beta) * zz[1] + itof(gama) * zz[2];
-
-.. raw:: html
-
-   </p>
 
 once per line, and update ``depth`` incrementally per pixel (note that
 doing this properly requires changing the code a little bit, because the
 original code overwrites ``depth`` with the value we store to the depth
 buffer, but that's easily changed):
 
-.. raw:: html
-
-   <p>
-
 ::
 
     depth += zx;
 
-.. raw:: html
-
-   </p>
-
 just like the edge equations themselves, where ``zx`` can be computed at
 setup time as
-
-.. raw:: html
-
-   <p>
 
 ::
 
     VecF32 zx = itof(aa1Inc) * zz[1] + itof(aa2Inc) * zz[2];
-
-.. raw:: html
-
-   </p>
 
 It should be easy to see why this produces the same results in exact
 arithmetic; but of course, in reality, there's floating-point round-off
@@ -4215,23 +3051,7 @@ no surprise that it's faster, but let's see by how much:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4242,14 +3062,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4323,35 +3135,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4362,14 +3150,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4443,35 +3223,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4482,14 +3238,6 @@ End of part 1
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4563,35 +3311,11 @@ End of part 1
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4602,14 +3326,6 @@ Vec[SF]32
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4683,35 +3399,11 @@ Vec[SF]32
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4722,14 +3414,6 @@ Setup cleanups
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4803,35 +3487,11 @@ Setup cleanups
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4842,14 +3502,6 @@ Binning fixes
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4923,35 +3575,11 @@ Binning fixes
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -4962,14 +3590,6 @@ No fixed-pt. Z/W
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -5043,35 +3663,11 @@ No fixed-pt. Z/W
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -5082,14 +3678,6 @@ No quad early-out
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -5163,35 +3751,11 @@ No quad early-out
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -5202,14 +3766,6 @@ Incremental depth
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -5283,31 +3839,11 @@ Incremental depth
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 Down by about another 0.1ms per frame - which might be less than you
 expected considering how many instructions we just got rid of. What can

@@ -37,55 +37,27 @@ dive right in!
 A simple example
 ~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 A good example is the member variable
 ``TransformedAABBoxSSE::mVisible``, declared like this:
-
-.. raw:: html
-
-   <p>
 
 ::
 
     bool *mVisible;
 
-.. raw:: html
-
-   </p>
-
 A pointer to a bool. So where does that pointer come from?
-
-.. raw:: html
-
-   <p>
 
 ::
 
     inline void SetVisible(bool *visible){mVisible = visible;}
-
-.. raw:: html
-
-   </p>
 
 It turns out that the constructor initializes this pointer to ``NULL``,
 and the only method that ever does anything with ``mVisible`` is
 ``RasterizeAndDepthTestAABBox``, which executes ``*mVisible = true;`` if
 the bounding box is found to be visible. So how does this all get used?
 
-.. raw:: html
-
-   <p>
-
 ::
 
     mpVisible[i] = false;mpTransformedAABBox[i].SetVisible(&mpVisible[i]);if(...){    mpTransformedAABBox[i].TransformAABBox();    mpTransformedAABBox[i].RasterizeAndDepthTestAABBox(...);}
-
-.. raw:: html
-
-   </p>
 
 That's it. That's the only call sites. There's really no reason for
 ``mVisible`` to be state - semantically, it's just a return value for
@@ -103,24 +75,12 @@ gonna walk through the details; you can always look at the
 A more interesting case
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 In the depth test rasterizer, right after determining the bounding box,
 there's this piece of code:
-
-.. raw:: html
-
-   <p>
 
 ::
 
     for(int vv = 0; vv < 3; vv++) {    // If W (holding 1/w in our case) is not between 0 and 1,    // then vertex is behind near clip plane (1.0 in our case).    // If W < 1 (for W>0), and 1/W < 0 (for W < 0).    VecF32 nearClipMask0 = cmple(xformedPos[vv].W, VecF32(0.0f));    VecF32 nearClipMask1 = cmpge(xformedPos[vv].W, VecF32(1.0f));    VecS32 nearClipMask = float2bits(or(nearClipMask0,        nearClipMask1));    if(!is_all_zeros(nearClipMask))    {        // All four vertices are behind the near plane (we're        // processing four triangles at a time w/ SSE)        return true;    }}
-
-.. raw:: html
-
-   </p>
 
 Okay. The transform code sets things up so that the "w" component of the
 screen-space positions actually contains 1/w; the first part of this
@@ -142,17 +102,9 @@ front of the near plane as soon as we're done transforming them, before
 we even think about triangle setup! So let's look at the function that
 transforms the vertices:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     void TransformedAABBoxSSE::TransformAABBox(){    for(UINT i = 0; i < AABB_VERTICES; i++)    {        mpXformedPos[i] = TransformCoords(&mpBBVertexList[i],            mCumulativeMatrix);        float oneOverW = 1.0f/max(mpXformedPos[i].m128_f32[3],            0.0000001f);        mpXformedPos[i] = mpXformedPos[i] * oneOverW;        mpXformedPos[i].m128_f32[3] = oneOverW;    }}
-
-.. raw:: html
-
-   </p>
 
 As we can see, returning 1/w does in fact take a bit of extra work, so
 we'd like to avoid it, especially since that 1/w is really only
@@ -193,17 +145,9 @@ starting the operation. To facilitate this, we just make
 ``TransformAABBox`` return whether the box should be rasterized or not.
 Putting it all together:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     bool TransformedAABBoxSSE::TransformAABBox(){    __m128 zAllIn = _mm_castsi128_ps(_mm_set1_epi32(~0));    for(UINT i = 0; i < AABB_VERTICES; i++)    {        __m128 vert = TransformCoords(&mpBBVertexList[i],            mCumulativeMatrix);        // We have inverted z; z is inside of near plane iff z <= w.        __m128 vertZ = _mm_shuffle_ps(vert, vert, 0xaa); //vert.zzzz        __m128 vertW = _mm_shuffle_ps(vert, vert, 0xff); //vert.wwww        __m128 zIn = _mm_cmple_ps(vertZ, vertW);        zAllIn = _mm_and_ps(zAllIn, zIn);        // project        mpXformedPos[i] = _mm_div_ps(vert, vertW);    }    // return true if and only if all verts inside near plane    return _mm_movemask_ps(zAllIn) == 0xf;}
-
-.. raw:: html
-
-   </p>
 
 In case you're wondering why this code uses raw SSE intrinsics and not
 ``VecF32``, it's because I'm purposefully trying to keep anything
@@ -218,17 +162,9 @@ remove the near-clip test from the depth test rasterizer, *and* we get
 to move our early-out for near-clipped boxes all the way to the call
 site:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     if(mpTransformedAABBox[i].TransformAABBox())    mpVisible[i] = mpTransformedAABBox[i].RasterizeAndDepthTestAABBox(...);else    mpVisible[i] = true;
-
-.. raw:: html
-
-   </p>
 
 So, the ``oneOverW`` hack, the clamping hack and the hard-coded near
 plane are gone. That's already a victory in terms of code quality, but
@@ -242,23 +178,7 @@ did it improve the run time?
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -269,14 +189,6 @@ Depth test
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -350,35 +262,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -389,14 +277,6 @@ Start
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -470,35 +350,11 @@ Start
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -509,14 +365,6 @@ Transform fixes
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -590,31 +438,11 @@ Transform fixes
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 Another 0.06ms off our median depth test time, which may not sound big
 but is over 5% of what's left of it at this point.
@@ -622,25 +450,13 @@ but is over 5% of what's left of it at this point.
 Getting warmer
 ~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 The bounding box rasterizer has one more method that's called per-box
 though, and this is one that really deserves some special attention.
 Meet ``IsTooSmall``:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     bool TransformedAABBoxSSE::IsTooSmall(__m128 *pViewMatrix,    __m128 *pProjMatrix, CPUTCamera *pCamera){    float radius = mBBHalf.lengthSq(); // Use length-squared to    // avoid sqrt().  Relative comparisons hold.    float fov = pCamera->GetFov();    float tanOfHalfFov = tanf(fov * 0.5f);    MatrixMultiply(mWorldMatrix, pViewMatrix, mCumulativeMatrix);    MatrixMultiply(mCumulativeMatrix, pProjMatrix,        mCumulativeMatrix);    MatrixMultiply(mCumulativeMatrix, mViewPortMatrix,        mCumulativeMatrix);    __m128 center = _mm_set_ps(1.0f, mBBCenter.z, mBBCenter.y,        mBBCenter.x);    __m128 mBBCenterOSxForm = TransformCoords(&center,        mCumulativeMatrix);    float w = mBBCenterOSxForm.m128_f32[3];    if( w > 1.0f )    {        float radiusDivW = radius / w;        float r2DivW2DivTanFov = radiusDivW / tanOfHalfFov;        return r2DivW2DivTanFov <            (mOccludeeSizeThreshold * mOccludeeSizeThreshold);    }    return false;}
-
-.. raw:: html
-
-   </p>
 
 Note that ``MatrixMultiply(A, B, C)`` performs ``C = A * B``; the rest
 should be easy enough to figure out from the code. Now there's really
@@ -668,10 +484,6 @@ several problems with this function, so let's go straight to a list:
    ``w`` and ``tanOfHalfFov`` are positive, we can just multiply through
    by them and get rid of the divide altogether.
 
-.. raw:: html
-
-   </p>
-
 All these things are common problems that I must have fixed a hundred
 times, but I have to admit that it's pretty rare to see so many of them
 in a single page of code. Anyway, rather than fixing these one by one,
@@ -680,33 +492,17 @@ we just move everything that only depends on the camera (or is global)
 into a single struct that holds our setup, which I dubbed
 ``BoxTestSetup``. Here's the code:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     struct BoxTestSetup{    __m128 mViewProjViewport[4];    float radiusThreshold;    void Init(const __m128 viewMatrix[4],        const __m128 projMatrix[4], CPUTCamera *pCamera,        float occludeeSizeThreshold);};void BoxTestSetup::Init(const __m128 viewMatrix[4],    const __m128 projMatrix[4], CPUTCamera *pCamera,    float occludeeSizeThreshold){    // viewportMatrix is a global float4x4; we need a __m128[4]    __m128 viewPortMatrix[4];    viewPortMatrix[0] = _mm_loadu_ps((float*)&viewportMatrix.r0);    viewPortMatrix[1] = _mm_loadu_ps((float*)&viewportMatrix.r1);    viewPortMatrix[2] = _mm_loadu_ps((float*)&viewportMatrix.r2);    viewPortMatrix[3] = _mm_loadu_ps((float*)&viewportMatrix.r3);    MatrixMultiply(viewMatrix, projMatrix, mViewProjViewport);    MatrixMultiply(mViewProjViewport, viewPortMatrix,        mViewProjViewport);    float fov = pCamera->GetFov();    float tanOfHalfFov = tanf(fov * 0.5f);    radiusThreshold = occludeeSizeThreshold * occludeeSizeThreshold        * tanOfHalfFov;}
-
-.. raw:: html
-
-   </p>
 
 This is initialized once we start culling and simply kept on the stack.
 Then we just pass it to ``IsTooSmall``, which after our `surgery`_ looks
 like this:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     bool TransformedAABBoxSSE::IsTooSmall(const BoxTestSetup &setup){    MatrixMultiply(mWorldMatrix, setup.mViewProjViewport,        mCumulativeMatrix);    __m128 center = _mm_set_ps(1.0f, mBBCenter.z, mBBCenter.y,        mBBCenter.x);    __m128 mBBCenterOSxForm = TransformCoords(&center,        mCumulativeMatrix);    float w = mBBCenterOSxForm.m128_f32[3];    if( w > 1.0f )    {        return mRadiusSq < w * setup.radiusThreshold;    }    return false;}
-
-.. raw:: html
-
-   </p>
 
 Wow, that method sure seems to have lost a few pounds. Let's run the
 numbers:
@@ -719,23 +515,7 @@ numbers:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -746,14 +526,6 @@ Depth test
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -827,35 +599,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -866,14 +614,6 @@ Start
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -947,35 +687,11 @@ Start
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -986,14 +702,6 @@ Transform fixes
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1067,35 +775,11 @@ Transform fixes
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1106,14 +790,6 @@ IsTooSmall cleanup
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1187,41 +863,17 @@ IsTooSmall cleanup
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 Another 0.2ms off the median run time, bringing our total reduction for
 this post to about 22%. So are we done? Not yet!
 
 The state police
 ~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 Currently, each ``TransformedAABBoxSSE`` still keeps its own copy of the
 cumulative transform matrix and a copy of its transformed vertices. But
@@ -1250,23 +902,7 @@ results:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1277,14 +913,6 @@ Depth test
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1358,35 +986,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1397,14 +1001,6 @@ Start
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1478,35 +1074,11 @@ Start
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1517,14 +1089,6 @@ Transform fixes
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1598,35 +1162,11 @@ Transform fixes
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1637,14 +1177,6 @@ IsTooSmall cleanup
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1718,35 +1250,11 @@ IsTooSmall cleanup
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1757,14 +1265,6 @@ Reduce state
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1838,31 +1338,11 @@ Reduce state
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 Only about 0.03ms this time, but we also save 192 bytes (plus allocator
 overhead) worth of memory per box, which is a nice bonus. And anyway,
@@ -1871,25 +1351,13 @@ we're not done yet, because I have one more!
 It's more fun to compute
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 There's one more piece of unnecessary data we currently store per
 bounding box: the vertex list, initialized in
 ``CreateAABBVertexIndexList``:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     float3 min = mBBCenter - bbHalf;float3 max = mBBCenter + bbHalf;    //Top 4 vertices in BBmpBBVertexList[0] = _mm_set_ps(1.0f, max.z, max.y, max.x);mpBBVertexList[1] = _mm_set_ps(1.0f, max.z, max.y, min.x); mpBBVertexList[2] = _mm_set_ps(1.0f, min.z, max.y, min.x);mpBBVertexList[3] = _mm_set_ps(1.0f, min.z, max.y, max.x);// Bottom 4 vertices in BBmpBBVertexList[4] = _mm_set_ps(1.0f, min.z, min.y, max.x);mpBBVertexList[5] = _mm_set_ps(1.0f, max.z, min.y, max.x);mpBBVertexList[6] = _mm_set_ps(1.0f, max.z, min.y, min.x);mpBBVertexList[7] = _mm_set_ps(1.0f, min.z, min.y, min.x);
-
-.. raw:: html
-
-   </p>
 
 This is, in effect, just treating the bounding box as a general mesh.
 But that's extremely wasteful - we already store center and half-extent,
@@ -1912,17 +1380,9 @@ can multiply both by ``M.row[0]`` once and store the result. Then the 8
 individual vertices can skip the multiplies altogether. Putting it all
 together leads to the following new code for ``TransformAABBox``:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     // 0 = use min corner, 1 = use max cornerstatic const int sBBxInd[AABB_VERTICES] = { 1, 0, 0, 1, 1, 1, 0, 0 };static const int sBByInd[AABB_VERTICES] = { 1, 1, 1, 1, 0, 0, 0, 0 };static const int sBBzInd[AABB_VERTICES] = { 1, 1, 0, 0, 0, 1, 1, 0 };bool TransformedAABBoxSSE::TransformAABBox(__m128 xformedPos[],    const __m128 cumulativeMatrix[4]){    // w ends up being garbage, but it doesn't matter - we ignore    // it anyway.    __m128 vCenter = _mm_loadu_ps(&mBBCenter.x);    __m128 vHalf   = _mm_loadu_ps(&mBBHalf.x);    __m128 vMin    = _mm_sub_ps(vCenter, vHalf);    __m128 vMax    = _mm_add_ps(vCenter, vHalf);    // transforms    __m128 xRow[2], yRow[2], zRow[2];    xRow[0] = _mm_shuffle_ps(vMin, vMin, 0x00) * cumulativeMatrix[0];    xRow[1] = _mm_shuffle_ps(vMax, vMax, 0x00) * cumulativeMatrix[0];    yRow[0] = _mm_shuffle_ps(vMin, vMin, 0x55) * cumulativeMatrix[1];    yRow[1] = _mm_shuffle_ps(vMax, vMax, 0x55) * cumulativeMatrix[1];    zRow[0] = _mm_shuffle_ps(vMin, vMin, 0xaa) * cumulativeMatrix[2];    zRow[1] = _mm_shuffle_ps(vMax, vMax, 0xaa) * cumulativeMatrix[2];    __m128 zAllIn = _mm_castsi128_ps(_mm_set1_epi32(~0));    for(UINT i = 0; i < AABB_VERTICES; i++)    {        // Transform the vertex        __m128 vert = cumulativeMatrix[3];        vert += xRow[sBBxInd[i]];        vert += yRow[sBByInd[i]];        vert += zRow[sBBzInd[i]];        // We have inverted z; z is inside of near plane iff z <= w.        __m128 vertZ = _mm_shuffle_ps(vert, vert, 0xaa); //vert.zzzz        __m128 vertW = _mm_shuffle_ps(vert, vert, 0xff); //vert.wwww        __m128 zIn = _mm_cmple_ps(vertZ, vertW);        zAllIn = _mm_and_ps(zAllIn, zIn);        // project        xformedPos[i] = _mm_div_ps(vert, vertW);    }    // return true if and only if none of the verts are z-clipped    return _mm_movemask_ps(zAllIn) == 0xf;}
-
-.. raw:: html
-
-   </p>
 
 Admittedly, quite a bit longer than the original one, but that's because
 we front-load a lot of the computation; most of the per-vertex work done
@@ -1936,23 +1396,7 @@ in ``TransformCoords`` is gone. And here's our reward:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1963,14 +1407,6 @@ Depth test
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2044,35 +1480,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2083,14 +1495,6 @@ Start
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2164,35 +1568,11 @@ Start
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2203,14 +1583,6 @@ Transform fixes
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2284,35 +1656,11 @@ Transform fixes
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2323,14 +1671,6 @@ IsTooSmall cleanup
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2404,35 +1744,11 @@ IsTooSmall cleanup
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2443,14 +1759,6 @@ Reduce state
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2524,35 +1832,11 @@ Reduce state
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2563,14 +1847,6 @@ Remove vert list
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2644,31 +1920,11 @@ Remove vert list
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 This brings our total for this post to a nearly 25% reduction in median
 depth test time, plus about 320 bytes memory reduction per

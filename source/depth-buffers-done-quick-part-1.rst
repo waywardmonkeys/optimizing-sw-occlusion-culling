@@ -15,10 +15,6 @@ code. This time, we're going to make it run faster - no further delays.
 Step 0: Repeatable test setup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 But before we change anything, let's first set up repeatable testing
 conditions. What I've been doing for the previous profiles is start the
 program from VTune with sample collection paused, manually resume
@@ -41,10 +37,6 @@ protocol:
 #. Tell the profile to stop collecting samples.
 #. Exit the program.
 
-.. raw:: html
-
-   </p>
-
 The sample already times how much time is spent in rendering the depth
 buffer and in the occlusion culling (which is another rasterizer that
 Z-tests a bounding box against the depth buffer prepared in the first
@@ -55,32 +47,16 @@ occlusion test time, I print out the minimum, 25th percentile, median,
 mean and standard deviation. This should give us a good idea of how
 these values are distributed. Here's a first run:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     Render time:  min=3.400ms  25th=3.442ms  med=3.459ms  75th=3.473ms  max=3.545ms  mean=3.459ms sdev=0.024msTest time:  min=1.653ms  25th=1.875ms  med=1.964ms  75th=2.036ms  max=2.220ms  mean=1.957ms sdev=0.108ms
 
-.. raw:: html
-
-   </p>
-
 and here's a second run on the same code (and needless to say, the same
 machine) to test how repeatable these results are:
-
-.. raw:: html
-
-   <p>
 
 ::
 
     Render time:  min=3.367ms  25th=3.420ms  med=3.432ms  75th=3.445ms  max=3.512ms  mean=3.433ms sdev=0.021msTest time:  min=1.586ms  25th=1.870ms  med=1.958ms  75th=2.025ms  max=2.211ms  mean=1.941ms sdev=0.119ms
-
-.. raw:: html
-
-   </p>
 
 As you can see, the two runs are within about 1% of each other for all
 the measurements - good enough for our purposes, at least right now.
@@ -104,23 +80,7 @@ present the results in a table as follows: (this is the render time)
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -131,14 +91,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -212,35 +164,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -251,14 +179,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -332,31 +252,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 I won't bother with the test time here (even though the initial version
 of this post did) because the code doesn't get changed; it's all noise.
@@ -364,27 +264,15 @@ of this post did) because the code doesn't get changed; it's all noise.
 Step 1: Get rid of special cases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Now, if you followed the links to the code I posted last time, you
 might've noticed that the code checks the variable
 ``gVisualizeDepthBuffer`` multiple times, even in the inner loop. An
 example is `this passage`_ that loads the current depth buffer values at
 the target location:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     __m128 previousDepthValue;if(gVisualizeDepthBuffer){    previousDepthValue = _mm_set_ps(pDepthBuffer[idx],        pDepthBuffer[idx + 1],        pDepthBuffer[idx + SCREENW],        pDepthBuffer[idx + SCREENW + 1]);}else{    previousDepthValue = *(__m128*)&pDepthBuffer[idx];}
-
-.. raw:: html
-
-   </p>
 
 I briefly mentioned this last time: this rasterizer processes blocks of
 2x2 pixels at a time. If depth buffer visualization is on, the depth
@@ -445,23 +333,7 @@ and we get rid of the alternative paths completely. Does it help?
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -472,14 +344,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -553,35 +417,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -592,14 +432,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -673,35 +505,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -712,14 +520,6 @@ Always tiled depth
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -793,31 +593,11 @@ Always tiled depth
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 We get a lower value for the depth tests, but that doesn't necessarily
 mean much, because it's still within a little more than a standard
@@ -831,25 +611,13 @@ optimizations easier. Progress.
 Step 2: Try to do a little less work
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Let me show you the whole inner loop (with some cosmetic changes so it
 fits in the layout, damn those overlong Intel SSE intrinsics) so you can
 see what I'm talking about:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     for(int c = startXx; c < endXx;        c += 2,        idx += 4,        alpha = _mm_add_epi32(alpha, aa0Inc),        beta  = _mm_add_epi32(beta, aa1Inc),        gama  = _mm_add_epi32(gama, aa2Inc)){    // Test Pixel inside triangle    __m128i mask = _mm_cmplt_epi32(fxptZero,         _mm_or_si128(_mm_or_si128(alpha, beta), gama));                     // Early out if all of this quad's pixels are    // outside the triangle.    if(_mm_test_all_zeros(mask, mask))        continue;                     // Compute barycentric-interpolated depth    __m128 betaf = _mm_cvtepi32_ps(beta);    __m128 gamaf = _mm_cvtepi32_ps(gama);    __m128 depth = _mm_mul_ps(_mm_cvtepi32_ps(alpha), zz[0]);    depth = _mm_add_ps(depth, _mm_mul_ps(betaf, zz[1]));    depth = _mm_add_ps(depth, _mm_mul_ps(gamaf, zz[2]));    __m128 previousDepthValue = *(__m128*)&pDepthBuffer[idx];    __m128 depthMask = _mm_cmpge_ps(depth, previousDepthValue);    __m128i finalMask = _mm_and_si128(mask,        _mm_castps_si128(depthMask));    depth = _mm_blendv_ps(previousDepthValue, depth,        _mm_castsi128_ps(finalMask));    _mm_store_ps(&pDepthBuffer[idx], depth);}
-
-.. raw:: html
-
-   </p>
 
 As I said last time, we expect at least 50% of the pixels inside an
 average triangle's bounding box to be outside the triangle. This loop
@@ -883,17 +651,9 @@ difference whether we write ``x >= 0`` or ``x > 0``. And the condition
 ``x >= 0``, we can implement by simply checking whether the sign bit is
 zero. Whew! Okay, so we get:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     __m128i mask = _mm_or_si128(_mm_or_si128(alpha, beta), gama));
-
-.. raw:: html
-
-   </p>
 
 Now, how do we test the sign bit without using an extra instruction?
 Well, it turns out that the instruction we use to determine whether we
@@ -901,17 +661,9 @@ should early-out is ``PTEST``, which already performs a binary AND. And
 it also turns out that the check we need ("are the sign bits set for all
 four lanes?") can be implemented using the very same instruction:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     if(_mm_testc_si128(_mm_set1_epi32(0x80000000), mask))
-
-.. raw:: html
-
-   </p>
 
 Note that the semantics of ``mask`` have changed, though: before, each
 SIMD lane held either the value 0 ("point outside triangle") or -1
@@ -923,17 +675,9 @@ one indicates "inside" and which one means "outside". Lucky for us,
 that's easily remedied in the computation of ``finalMask``, still only
 by changing ops without adding any:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     __m128i finalMask = _mm_andnot_si128(mask,    _mm_castps_si128(depthMask));
-
-.. raw:: html
-
-   </p>
 
 We simply use ``andnot`` instead of ``and``. Okay, I admit that was a
 bit of trouble to get rid of a single instruction, but this *is* a tight
@@ -949,23 +693,7 @@ places where that kind of stuff actually matters. So, did it help?
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -976,14 +704,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1057,35 +777,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1096,14 +792,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1177,35 +865,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1216,14 +880,6 @@ Always tiled depth
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1297,35 +953,11 @@ Always tiled depth
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1336,14 +968,6 @@ One compare less
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1417,31 +1041,11 @@ One compare less
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 Yes indeed: render time is down by 0.1ms - about 4 standard deviations,
 a significant win (and yes, this is repeatable). To be fair, as we've
@@ -1457,10 +1061,6 @@ thing happens.
 
 Step 2b: Squeeze it some more
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 Next, we look at the second half of the loop, after the early-out. This
 half is easier to find worthwhile targets in. Currently, we perform full
@@ -1485,59 +1085,27 @@ multiply in the inner loop - two less instructions for a bit of extra
 setup work once per triangle. Namely, our per-triangle setup computation
 goes from
 
-.. raw:: html
-
-   <p>
-
 ::
 
     __m128 oneOverArea = _mm_set1_ps(oneOverTriArea.m128_f32[lane]);zz[0] *= oneOverArea;zz[1] *= oneOverArea;zz[2] *= oneOverArea;
 
-.. raw:: html
-
-   </p>
-
 to
-
-.. raw:: html
-
-   <p>
 
 ::
 
     __m128 oneOverArea = _mm_set1_ps(oneOverTriArea.m128_f32[lane]);zz[1] = (zz[1] - zz[0]) * oneOverArea;zz[2] = (zz[2] - zz[0]) * oneOverArea;
 
-.. raw:: html
-
-   </p>
-
 and our per-pixel interpolation goes from
-
-.. raw:: html
-
-   <p>
 
 ::
 
     __m128 depth = _mm_mul_ps(_mm_cvtepi32_ps(alpha), zz[0]);depth = _mm_add_ps(depth, _mm_mul_ps(betaf, zz[1]));depth = _mm_add_ps(depth, _mm_mul_ps(gamaf, zz[2]));
 
-.. raw:: html
-
-   </p>
-
 to
-
-.. raw:: html
-
-   <p>
 
 ::
 
     __m128 depth = zz[0];depth = _mm_add_ps(depth, _mm_mul_ps(betaf, zz[1]));depth = _mm_add_ps(depth, _mm_mul_ps(gamaf, zz[2]));
-
-.. raw:: html
-
-   </p>
 
 And what do our timings say?
 
@@ -1549,23 +1117,7 @@ And what do our timings say?
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1576,14 +1128,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1657,35 +1201,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1696,14 +1216,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1777,35 +1289,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1816,14 +1304,6 @@ Always tiled depth
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1897,35 +1377,11 @@ Always tiled depth
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1936,14 +1392,6 @@ One compare less
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2017,35 +1465,11 @@ One compare less
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2056,14 +1480,6 @@ Simplify interp.
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2137,31 +1553,11 @@ Simplify interp.
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 Render time is down by about another 0.05ms, and the whole distribution
 has shifted down by roughly that amount (without increasing variance),
@@ -2171,17 +1567,9 @@ Finally, there's another place where we can make a difference by better
 instruction selection. Our current depth buffer update code looks as
 follows:
 
-.. raw:: html
-
-   <p>
-
 ::
 
         __m128 previousDepthValue = *(__m128*)&pDepthBuffer[idx];    __m128 depthMask = _mm_cmpge_ps(depth, previousDepthValue);    __m128i finalMask = _mm_andnot_si128(mask,        _mm_castps_si128(depthMask));    depth = _mm_blendv_ps(previousDepthValue, depth,        _mm_castsi128_ps(finalMask));
-
-.. raw:: html
-
-   </p>
 
 ``finalMask`` here is a mask that encodes "pixel lies inside the
 triangle AND has a larger depth value than the previous pixel at that
@@ -2192,17 +1580,9 @@ better, because SSE provides ``MAXPS``, which directly computes the
 maximum of two floating-point numbers. Using max, we can rewrite this
 expression to read:
 
-.. raw:: html
-
-   <p>
-
 ::
 
         __m128 previousDepthValue = *(__m128*)&pDepthBuffer[idx];    __m128 mergedDepth = _mm_max_ps(depth, previousDepthValue);    depth = _mm_blendv_ps(mergedDepth, previousDepthValue,        _mm_castsi128_ps(mask));
-
-.. raw:: html
-
-   </p>
 
 This is a slightly different way to phrase the solution - "pick
 whichever is largest of the previous and the interpolated depth value,
@@ -2221,23 +1601,7 @@ Let's check whether it helps!
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2248,14 +1612,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2329,35 +1685,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2368,14 +1700,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2449,35 +1773,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2488,14 +1788,6 @@ Always tiled depth
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2569,35 +1861,11 @@ Always tiled depth
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2608,14 +1876,6 @@ One compare less
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2689,35 +1949,11 @@ One compare less
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2728,14 +1964,6 @@ Simplify interp.
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2809,35 +2037,11 @@ Simplify interp.
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2848,14 +2052,6 @@ Revise depth update
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2929,31 +2125,11 @@ Revise depth update
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 It does appear to shave off another 0.05ms, bringing the total savings
 due to our instruction-shaving up to about 0.2ms - about a 6% reduction
@@ -2964,10 +2140,6 @@ that mean that this is as fast as it's going to go?
 
 Step 3: Show the outer loops some love
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 Of course not. This is actually a common mistake people make during
 optimization sessions: focusing on the innermost loops to the exclusion
@@ -2983,17 +2155,9 @@ per triangle.
 
 So let's look at our row loop:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     for(int r = startYy; r < endYy;        r += 2,        row  = _mm_add_epi32(row, _mm_set1_epi32(2)),        rowIdx = rowIdx + 2 * SCREENW,        bb0Row = _mm_add_epi32(bb0Row, bb0Inc),        bb1Row = _mm_add_epi32(bb1Row, bb1Inc),        bb2Row = _mm_add_epi32(bb2Row, bb2Inc)){    // Compute barycentric coordinates     int idx = rowIdx;    __m128i alpha = _mm_add_epi32(aa0Col, bb0Row);    __m128i beta = _mm_add_epi32(aa1Col, bb1Row);    __m128i gama = _mm_add_epi32(aa2Col, bb2Row);    // <Column loop here>}
-
-.. raw:: html
-
-   </p>
 
 Okay, we don't even need to get fancy here - there's two things that
 immediately come to mind. First, we seem to be updating ``row`` even
@@ -3009,31 +2173,15 @@ additions once per triangle!
 
 So before the loop, we add:
 
-.. raw:: html
-
-   <p>
-
 ::
 
         __m128i sum0Row = _mm_add_epi32(aa0Col, bb0Row);    __m128i sum1Row = _mm_add_epi32(aa1Col, bb1Row);    __m128i sum2Row = _mm_add_epi32(aa2Col, bb2Row);
 
-.. raw:: html
-
-   </p>
-
 and then we change the row loop itself to read:
-
-.. raw:: html
-
-   <p>
 
 ::
 
     for(int r = startYy; r < endYy;        r += 2,        rowIdx = rowIdx + 2 * SCREENW,        sum0Row = _mm_add_epi32(sum0Row, bb0Inc),        sum1Row = _mm_add_epi32(sum1Row, bb1Inc),        sum2Row = _mm_add_epi32(sum2Row, bb2Inc)){    // Compute barycentric coordinates     int idx = rowIdx;    __m128i alpha = sum0Row;    __m128i beta = sum1Row;    __m128i gama = sum2Row;    // <Column loop here>}
-
-.. raw:: html
-
-   </p>
 
 That's probably the most straightforward of all the changes we've seen
 so far. But still, it's in an outer loop, so we wouldn't expect to get
@@ -3048,23 +2196,7 @@ the inner loop. Any guesses for how much it actually helps?
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3075,14 +2207,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3156,35 +2280,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3195,14 +2295,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3276,35 +2368,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3315,14 +2383,6 @@ Always tiled depth
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3396,35 +2456,11 @@ Always tiled depth
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3435,14 +2471,6 @@ One compare less
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3516,35 +2544,11 @@ One compare less
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3555,14 +2559,6 @@ Simplify interp.
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3636,35 +2632,11 @@ Simplify interp.
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3675,14 +2647,6 @@ Revise depth update
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3756,35 +2720,11 @@ Revise depth update
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3795,14 +2735,6 @@ Tweak row loop
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3876,31 +2808,11 @@ Tweak row loop
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 I bet you didn't expect that one. I think I've made my point.
 

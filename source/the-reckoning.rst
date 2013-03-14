@@ -12,10 +12,6 @@ reflection on the results. So, time to find out how far we've come!
 The results
 ~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Without further ado, here's the breakdown of per-frame work at the end
 of the respective posts (names abbreviated), in order:
 
@@ -25,23 +21,7 @@ of the respective posts (names abbreviated), in order:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -105,35 +85,11 @@ Total
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -197,35 +153,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -289,35 +221,11 @@ Write Combining
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -381,35 +289,11 @@ Sharing
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -473,35 +357,11 @@ Cache issues
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -565,35 +425,11 @@ Frustum culling
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -657,35 +493,11 @@ Depth buffers 1
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -749,35 +561,11 @@ Depth buffers 2
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -841,35 +629,11 @@ Workers 1
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -933,35 +697,11 @@ Workers 2
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1025,35 +765,11 @@ Dataflows
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1117,35 +833,11 @@ Speculation
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1209,35 +901,11 @@ Mopping up
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1301,35 +969,11 @@ Mopping up
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1393,31 +1037,11 @@ Mopping up
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 What, you think that doesn't tell you much? Okay, so did I. Have a graph
 instead:
@@ -1440,10 +1064,6 @@ started working on that part of the code. Which makes you wonder...
 What-if machine
 ~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Is the software occlusion culling actually worth it? That is, how much
 do we actually get for the CPU time we invest in occlusion culling? To
 help answer this, I ran a few more tests:
@@ -1454,23 +1074,7 @@ help answer this, I ran a few more tests:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1534,35 +1138,11 @@ Total
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1626,35 +1206,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1718,35 +1274,11 @@ Initial, no occ.
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1810,35 +1342,11 @@ Cherry-pick
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1902,23 +1410,7 @@ Cherry-pick, no occ.
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1982,35 +1474,11 @@ Final
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2074,31 +1542,11 @@ Final, no occ.
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 Yes, the occlusion culling was a solid win both before and after. But
 the interesting value is the "cherry-pick" one. This is the original
@@ -2117,10 +1565,6 @@ timekeeping code added, in case you feel like nitpicking)
    going over whole database every time. Total diff: 15 lines added, 18
    deleted.
 
-.. raw:: html
-
-   </p>
-
 In other words, "Cherry-pick" is within a few dozen lines of the
 original code, all of the changes are to "framework" code not the actual
 sample, and none of them do anything fancy. Yet it makes the difference
@@ -2129,10 +1573,6 @@ speedup, down from the 2x it was before!
 
 A brief digression
 ~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 This kind of thing is, in a nutshell, the reason why graphics papers
 really need to come with source code. Anything GPU-related in particular
@@ -2170,10 +1610,6 @@ relevant in practice. Anyway, let's get back to the subject at hand.
 
 Observations
 ~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 The number one lesson from all of this probably is that there's lots of
 ways to shoot yourself in the foot in graphics, and that it's really
@@ -2215,10 +1651,6 @@ issues.
 
 While you're at it...
 ~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 Anyway, once you've picked a suitable target, I recommend that you do
 not just the necessary work to knock it out of the top 10 (or some other
@@ -2275,10 +1707,6 @@ you find them.
 Ground we've covered
 ~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Throughout this series, my emphasis has been on changes that are fairly
 high-yield but have low impact in terms of how much disruption they
 cause. I also made no substantial algorithmic changes. That was fully
@@ -2311,10 +1739,6 @@ architectural material too, which I hope will come in handy. :)
 
 Changes I intentionally did not make
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 So finally, here's a list of things I did *not* discuss in this series,
 because they were either too invasive, too tricky or changed the
@@ -2366,10 +1790,6 @@ algorithms substantially:
    definitely worth looking into if you want to ship this in a game.
 -  *Try other occlusion culling techniques*. Out of the (already
    considerably bloated) scope of this series.
-
-.. raw:: html
-
-   </p>
 
 And that's it! I hope you had as much fun reading these posts as I did
 writing them. But for now, it's back to your regularly scheduled,

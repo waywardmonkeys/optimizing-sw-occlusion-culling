@@ -55,10 +55,6 @@ Here's the list of posts (the series is now finished):
 #. `"The Reckoning"`_ - in which a lesson is learned, but `the damage is
    irreversible`_.
 
-.. raw:: html
-
-   </p>
-
 All the code is available on `Github`_; there's various branches
 corresponding to various (simultaneous) tracks of development, including
 a lot of experiments that didn't pan out. The articles all reference the
@@ -81,10 +77,6 @@ Fabian Giesen
 has waived all copyright and related or neighboring rights to
 
 Optimizing Software Occlusion Culling.
-
-.. raw:: html
-
-   </p>
 
 .. _Software Occlusion Culling demo: http://software.intel.com/en-us/vcsource/samples/software-occlusion-culling
 .. _"Write combining is not your friend": http://fgiesen.wordpress.com/2013/01/29/write-combining-is-not-your-friend/

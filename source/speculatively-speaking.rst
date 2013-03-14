@@ -14,10 +14,6 @@ execution`_.
 Loads blocked by what?
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 There's one more micro-architectural issue this program runs into that I
 haven't talked about before. Here's the obligatory profiler screenshot:
 
@@ -89,17 +85,9 @@ speculation easier), and is a technique not just used in out-of-order
 architectures; there's just one problem though: what happens if I run
 code like this?
 
-.. raw:: html
-
-   <p>
-
 ::
 
       mov  [x], eax  mov  ebx, [x]
-
-.. raw:: html
-
-   </p>
 
 Assuming no other threads writing to the same memory at the same time,
 you would certainly hope that at the end of this instruction sequence,
@@ -145,40 +133,20 @@ Load-Hit-Store).
 Revenge of the cycle-eaters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Which brings us back to the example at hand: what's going on in those
 functions, ``BinTransformedTrianglesMT`` in particular? Some
 investigation of the compiled code shows that the first sign of blocked
 loads is near these reads:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     Gather(xformedPos, index, numLanes);       vFxPt4 xFormedFxPtPos[3];for(int i = 0; i < 3; i++){    xFormedFxPtPos[i].X = ftoi_round(xformedPos[i].X);    xFormedFxPtPos[i].Y = ftoi_round(xformedPos[i].Y);    xFormedFxPtPos[i].Z = ftoi_round(xformedPos[i].Z);    xFormedFxPtPos[i].W = ftoi_round(xformedPos[i].W);}
 
-.. raw:: html
-
-   </p>
-
 and looking at the code for ``Gather`` shows us exactly what's going on:
-
-.. raw:: html
-
-   <p>
 
 ::
 
     void TransformedMeshSSE::Gather(vFloat4 pOut[3], UINT triId,    UINT numLanes){    for(UINT l = 0; l < numLanes; l++)    {        for(UINT i = 0; i < 3; i++)        {            UINT index = mpIndices[(triId * 3) + (l * 3) + i];            pOut[i].X.lane[l] = mpXformedPos[index].m128_f32[0];            pOut[i].Y.lane[l] = mpXformedPos[index].m128_f32[1];            pOut[i].Z.lane[l] = mpXformedPos[index].m128_f32[2];            pOut[i].W.lane[l] = mpXformedPos[index].m128_f32[3];        }    }}
-
-.. raw:: html
-
-   </p>
 
 Aha! This is the code that transforms our vertices from the AoS (array
 of structures) form that's used in memory into the SoA (structure of
@@ -199,17 +167,9 @@ matrix; luckily, a 4x4 matrix transpose is fairly easy to do in SSE, and
 Intel's intrinsics header file even comes with a macro that implements
 it. So here's the updated ``Gather`` that uses a SSE transpose:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     void TransformedMeshSSE::Gather(vFloat4 pOut[3], UINT triId,    UINT numLanes){    const UINT *pInd0 = &mpIndices[triId * 3];    const UINT *pInd1 = pInd0 + (numLanes > 1 ? 3 : 0);    const UINT *pInd2 = pInd0 + (numLanes > 2 ? 6 : 0);    const UINT *pInd3 = pInd0 + (numLanes > 3 ? 9 : 0);    for(UINT i = 0; i < 3; i++)    {        __m128 v0 = mpXformedPos[pInd0[i]]; // x0 y0 z0 w0        __m128 v1 = mpXformedPos[pInd1[i]]; // x1 y1 z1 w1        __m128 v2 = mpXformedPos[pInd2[i]]; // x2 y2 z2 w2        __m128 v3 = mpXformedPos[pInd3[i]]; // x3 y3 z3 w3        _MM_TRANSPOSE4_PS(v0, v1, v2, v3);        // After transpose:        pOut[i].X = VecF32(v0); // v0 = x0 x1 x2 x3        pOut[i].Y = VecF32(v1); // v1 = y0 y1 y2 y3        pOut[i].Z = VecF32(v2); // v2 = z0 z1 z2 z3        pOut[i].W = VecF32(v3); // v3 = w0 w1 w2 w3    }}
-
-.. raw:: html
-
-   </p>
 
 Not much to talk about here. The other two instances of this get
 modified in the exact same way. So how much does it help?
@@ -222,23 +182,7 @@ modified in the exact same way. So how much does it help?
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -249,14 +193,6 @@ Total cull time
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -330,35 +266,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -369,14 +281,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -450,35 +354,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -489,14 +369,6 @@ SSE Gather
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -570,23 +442,7 @@ SSE Gather
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -594,31 +450,11 @@ SSE Gather
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
    <table>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -629,14 +465,6 @@ Render depth
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -710,35 +538,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -749,14 +553,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -830,35 +626,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -869,14 +641,6 @@ SSE Gather
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -950,23 +714,7 @@ SSE Gather
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -974,31 +722,11 @@ SSE Gather
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
    <table>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1009,14 +737,6 @@ Depth test
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1090,35 +810,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1129,14 +825,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1210,35 +898,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1249,14 +913,6 @@ SSE Gather
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1330,31 +986,11 @@ SSE Gather
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 So we're another 0.13ms down, about 0.04ms of which we gain in the depth
 testing pass and the remaining 0.09ms in the rendering pass. And a
@@ -1365,10 +1001,6 @@ re-run with VTune confirms that the blocked loads are indeed gone:
 Vertex transformation
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 `Last time`_, we modified the vertex transform code in the depth test
 rasterizer to get rid of the z-clamping and simplify the clipping logic.
 We also changed the logic to make better use of the regular structure of
@@ -1376,31 +1008,15 @@ our input vertices. We don't have any special structure we can use to
 make vertex transforms on regular meshes faster, but we definitely can
 (and should) improve the projection and near-clip logic, turning this:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     mpXformedPos[i] = TransformCoords(&mpVertices[i].position,    cumulativeMatrix);float oneOverW = 1.0f/max(mpXformedPos[i].m128_f32[3], 0.0000001f);mpXformedPos[i] = _mm_mul_ps(mpXformedPos[i],    _mm_set1_ps(oneOverW));mpXformedPos[i].m128_f32[3] = oneOverW;
 
-.. raw:: html
-
-   </p>
-
 into this:
-
-.. raw:: html
-
-   <p>
 
 ::
 
     __m128 xform = TransformCoords(&mpVertices[i].position,    cumulativeMatrix);__m128 vertZ = _mm_shuffle_ps(xform, xform, 0xaa);__m128 vertW = _mm_shuffle_ps(xform, xform, 0xff);__m128 projected = _mm_div_ps(xform, vertW);// set to all-0 if near-clipped__m128 mNoNearClip = _mm_cmple_ps(vertZ, vertW);mpXformedPos[i] = _mm_and_ps(projected, mNoNearClip);
-
-.. raw:: html
-
-   </p>
 
 Here, near-clipped vertices are set to the (invalid) x=y=z=w=0, and the
 binner code can just check for ``w==0`` to test whether a vertex is
@@ -1413,10 +1029,6 @@ thought it was worth mentioning.
 
 Again with the memory ordering
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 And if we profile again, we notice there's at least one more surprise
 waiting for us in the binning code:
@@ -1432,17 +1044,9 @@ feeding of worker threads`_\ ", we now have binning jobs running tightly
 packed enough to run into memory ordering issues. So what's the problem?
 Here's the code:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     // Add triangle to the tiles or bins that the bounding box coversint row, col;for(row = startY; row <= endY; row++){    int offset1 = YOFFSET1_MT * row;    int offset2 = YOFFSET2_MT * row;    for(col = startX; col <= endX; col++)    {        int idx1 = offset1 + (XOFFSET1_MT * col) + taskId;        int idx2 = offset2 + (XOFFSET2_MT * col) +            (taskId * MAX_TRIS_IN_BIN_MT) + pNumTrisInBin[idx1];        pBin[idx2] = index + i;        pBinModel[idx2] = modelId;        pBinMesh[idx2] = meshId;        pNumTrisInBin[idx1] += 1;    }}
-
-.. raw:: html
-
-   </p>
 
 The problem turns out to be the array ``pNumTrisInBin``. Even though
 it's accessed as 1D, it is effectively a 3D array like this:
@@ -1509,23 +1113,7 @@ things correctly). So again, it's a really easy fix. The question being
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1536,14 +1124,6 @@ Total cull time
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1617,35 +1197,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1656,14 +1212,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1737,35 +1285,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1776,14 +1300,6 @@ SSE Gather
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1857,35 +1373,11 @@ SSE Gather
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1896,14 +1388,6 @@ Change bin inds
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1977,23 +1461,7 @@ Change bin inds
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2001,31 +1469,11 @@ Change bin inds
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
    <table>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2036,14 +1484,6 @@ Render depth
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2117,35 +1557,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2156,14 +1572,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2237,35 +1645,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2276,14 +1660,6 @@ SSE Gather
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2357,35 +1733,11 @@ SSE Gather
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2396,14 +1748,6 @@ Change bin inds
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2477,31 +1821,11 @@ Change bin inds
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 That's right, a 0.1ms difference from *changing the memory layout of a
 1024-entry, 2048-byte array*. You really need to be extremely careful
@@ -2510,10 +1834,6 @@ same time.
 
 Once more, with branching
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 At this point, the binner is starting to look fairly good, but there's
 one more thing that springs to eye:
@@ -2529,17 +1849,9 @@ an excuse - sure, the triangles have very different dimensions measured
 inside one of our (generously sized!) 320x90 pixel tiles. So where are
 all these branches?
 
-.. raw:: html
-
-   <p>
-
 ::
 
     for(int i = 0; i < numLanes; i++){    // Skip triangle if area is zero     if(triArea.lane[i] <= 0) continue;    if(vEndX.lane[i] < vStartX.lane[i] ||       vEndY.lane[i] < vStartY.lane[i]) continue;                float oneOverW[3];    for(int j = 0; j < 3; j++)        oneOverW[j] = xformedPos[j].W.lane[i];               // Reject the triangle if any of its verts are outside the    // near clip plane    if(oneOverW[0] == 0.0f || oneOverW[1] == 0.0f ||        oneOverW[2] == 0.0f) continue;    // ...}
-
-.. raw:: html
-
-   </p>
 
 Oh yeah, that. In particular, the first test (which checks for
 degenerate and back-facing triangles) will reject roughly half of all
@@ -2556,17 +1868,9 @@ consolidate the branches somehow?
 Of course we can. The basic idea is to do all the tests on 4 triangles
 at a time, while we're still in SIMD form:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     // Figure out which lanes are activeVecS32 mFront = cmpgt(triArea, VecS32::zero());VecS32 mNonemptyX = cmpgt(vEndX, vStartX);VecS32 mNonemptyY = cmpgt(vEndY, vStartY);VecF32 mAccept1 = bits2float(mFront & mNonemptyX & mNonemptyY);// All verts must be inside the near clip volumeVecF32 mW0 = cmpgt(xformedPos[0].W, VecF32::zero());VecF32 mW1 = cmpgt(xformedPos[1].W, VecF32::zero());VecF32 mW2 = cmpgt(xformedPos[2].W, VecF32::zero());VecF32 mAccept = and(and(mAccept1, mW0), and(mW1, mW2));// laneMask == (1 << numLanes) - 1; - initialized earlierunsigned int triMask = _mm_movemask_ps(mAccept.simd) & laneMask;
-
-.. raw:: html
-
-   </p>
 
 Note I change the "is not near-clipped test" from ``!(w == 0.0f)`` to
 ``w > 0.0f``, on account of me knowing that all legal w's happen to not
@@ -2579,49 +1883,25 @@ lanes using ``MOVMSKPS``.
 With this, we could turn all the original branches into a single test in
 the ``i`` loop:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     if((triMask & (1 << i)) == 0)    continue;
-
-.. raw:: html
-
-   </p>
 
 However, we can do slightly better than that: it turns out we can
 iterate pretty much directly over the set bits in ``triMask``, which
 means we're now down to one single branch in the outer loop - the loop
 counter itself. The modified loop looks like this:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     while(triMask){    int i = FindClearLSB(&triMask);    // ...}
 
-.. raw:: html
-
-   </p>
-
 So what does the magic ``FindClearLSB`` function do? It better not
 contain any branches! But lucky for us, it's quite straightforward:
-
-.. raw:: html
-
-   <p>
 
 ::
 
     // Find index of least-significant set bit in mask// and clear it (mask must be nonzero)static int FindClearLSB(unsigned int *mask){    unsigned long idx;    _BitScanForward(&idx, *mask);    *mask &= *mask - 1;    return idx;}
-
-.. raw:: html
-
-   </p>
 
 all it takes is ``_BitScanForward`` (the VC++ intrinsic for the x86
 ``BSF`` instruction) and a really old trick for clearing the
@@ -2637,23 +1917,7 @@ So does it help?
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2664,14 +1928,6 @@ Total cull time
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2745,35 +2001,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2784,14 +2016,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2865,35 +2089,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2904,14 +2104,6 @@ SSE Gather
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -2985,35 +2177,11 @@ SSE Gather
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3024,14 +2192,6 @@ Change bin inds
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3105,35 +2265,11 @@ Change bin inds
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3144,14 +2280,6 @@ Less branches
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3225,23 +2353,7 @@ Less branches
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3249,31 +2361,11 @@ Less branches
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
    <table>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3284,14 +2376,6 @@ Render depth
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3365,35 +2449,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3404,14 +2464,6 @@ Initial
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3485,35 +2537,11 @@ Initial
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3524,14 +2552,6 @@ SSE Gather
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3605,35 +2625,11 @@ SSE Gather
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3644,14 +2640,6 @@ Change bin inds
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3725,35 +2713,11 @@ Change bin inds
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3764,14 +2728,6 @@ Less branches
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -3845,31 +2801,11 @@ Less branches
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 That's another 0.07ms off the total, for about a 10% reduction in median
 total cull time for this post, and a 12.7% reduction in median

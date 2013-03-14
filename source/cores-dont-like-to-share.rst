@@ -38,10 +38,6 @@ place!
 Our problem of the day
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 That said, we're still not going to see any actual occlusion culling
 performance problems or optimizations today. Because before we get
 there, it turns out we have some more low-hanging fruit to pick. As
@@ -77,10 +73,6 @@ that mean?
 
 Understanding machine clears
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 What Intel calls a "machine clear" on its current architectures is
 basically a panic mode: the CPU core takes all currently pending
@@ -142,10 +134,6 @@ cancelled and re-executed. The question is: what is it?
 Finding the culprit
 ~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 And this is where it gets icky. With a lot of things like cache misses
 or slow instructions, a profiler can tell us *exactly* which instruction
 is causing the problem. Memory ordering problems are much harder to
@@ -181,33 +169,17 @@ change, you can't get any memory ordering conflicts.
 Here's the declaration of the ``CPUTFrustum`` class (several methods
 omitted for brevity):
 
-.. raw:: html
-
-   <p>
-
 ::
 
     class CPUTFrustum{public:    float3 mpPosition[8];    float3 mpNormal[6];    UINT mNumFrustumVisibleModels;    UINT mNumFrustumCulledModels;    void InitializeFrustum( CPUTCamera *pCamera );    bool IsVisible(        const float3 &center,        const float3 &half    );};
-
-.. raw:: html
-
-   </p>
 
 And here's the full code for ``IsVisible``, with some minor formatting
 changes to make it fit inside the layout (excerpting it would spoil the
 reveal):
 
-.. raw:: html
-
-   <p>
-
 ::
 
     bool CPUTFrustum::IsVisible(    const float3 &center,    const float3 &half){    // TODO:  There are MUCH more efficient ways to do this.    float3 pBBoxPosition[8];    pBBoxPosition[0] = center + float3(  half.x,  half.y,  half.z );    pBBoxPosition[1] = center + float3(  half.x,  half.y, -half.z );    pBBoxPosition[2] = center + float3(  half.x, -half.y,  half.z );    pBBoxPosition[3] = center + float3(  half.x, -half.y, -half.z );    pBBoxPosition[4] = center + float3( -half.x,  half.y,  half.z );    pBBoxPosition[5] = center + float3( -half.x,  half.y, -half.z );    pBBoxPosition[6] = center + float3( -half.x, -half.y,  half.z );    pBBoxPosition[7] = center + float3( -half.x, -half.y, -half.z );    // Test each bounding box point against each of the six frustum    // planes.    // Note: we need a point on the plane to compute the distance    // to the plane. We only need two of our frustum's points to do    // this. A corner vertex is on three of the six planes.  We    // need two of these corners to have a point on all six planes.    UINT pPointIndex[6] = {0,0,0,6,6,6};    UINT ii;    for( ii=0; ii<6; ii++ )    {        bool allEightPointsOutsidePlane = true;        float3 *pNormal = &mpNormal[ii];        float3 *pPlanePoint = &mpPosition[pPointIndex[ii]];        float3 planeToPoint;        float distanceToPlane;        UINT jj;        for( jj=0; jj<8; jj++ )        {            planeToPoint = pBBoxPosition[jj] - *pPlanePoint;            distanceToPlane = dot3( *pNormal, planeToPoint );            if( distanceToPlane < 0.0f )            {                allEightPointsOutsidePlane = false;                break; // from for.  No point testing any                // more points against this plane.            }        }        if( allEightPointsOutsidePlane )        {            mNumFrustumCulledModels++;            return false;        }    }    // Tested all eight points against all six planes and    // none of the planes had all eight points outside.    mNumFrustumVisibleModels++;    return true;}
-
-.. raw:: html
-
-   </p>
 
 Can you see what's going wrong? Try to figure it out yourself. It's a
 far more powerful lesson if you discover it yourself. Scroll down if you
@@ -223,16 +195,8 @@ think you have the answer (or if you give up).
 
    </div>
 
-.. raw:: html
-
-   </p>
-
 The reveal
 ~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 As I mentioned, what it takes for memory ordering conflicts to occur is
 writes. The function arguments are const, and ``mpPosition`` and
@@ -286,10 +250,6 @@ the top twenty.
 Two steps forward, one step back
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 All is not well however, because the method
 ``AABBoxRasterizerSSEMT::IsInsideViewFrustum``, which you can (barely)
 see in some of the earlier profiles, suddenly got a lot slower in
@@ -306,17 +266,9 @@ And more to the point, the problem actually isn't in
 ``TransformedAABBoxSSE::IsInsideViewFrustum``, which it calls, and which
 does get inlined into ``AABBoxRasterizerSSEMT::IsInsideViewFrustum``:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     void TransformedAABBoxSSE::IsInsideViewFrustum(CPUTCamera *pCamera){    float3 mBBCenterWS;    float3 mBBHalfWS;    mpCPUTModel->GetBoundsWorldSpace(&mBBCenterWS, &mBBHalfWS);    mInsideViewFrustum = pCamera->mFrustum.IsVisible(mBBCenterWS,        mBBHalfWS);}
-
-.. raw:: html
-
-   </p>
 
 No smoking guns here either - a getter call to retrieve the bounding box
 center and half-extents, followed by the call to ``IsVisible``. And no,

@@ -20,10 +20,6 @@ side of things.
 The elephant in the room
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Featured quite near the top of all the profiles we've seen so far are
 two functions I haven't talked about before:
 
@@ -48,17 +44,9 @@ So, what can we do to use less resources? There's lots of options, but
 one thing I had noticed while measuring loading time is that there's one
 dynamic constant buffer per model:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     // Create the model constant buffer.HRESULT hr;D3D11_BUFFER_DESC bd = {0};bd.ByteWidth = sizeof(CPUTModelConstantBuffer);bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;bd.Usage = D3D11_USAGE_DYNAMIC;bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;hr = (CPUT_DX11::GetDevice())->CreateBuffer( &bd, NULL,    &mpModelConstantBuffer );ASSERT( !FAILED( hr ), _L("Error creating constant buffer.") );
-
-.. raw:: html
-
-   </p>
 
 Note that they're all the same size, and it turns out that all of them
 get updated (using a ``Map`` with ``DISCARD``) immediately before they
@@ -80,23 +68,7 @@ probably gonna make a difference, but how much can it be, really?
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -107,14 +79,6 @@ Render scene
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -188,35 +152,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -227,14 +167,6 @@ Original
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -308,35 +240,11 @@ Original
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -347,14 +255,6 @@ One dynamic CB
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -428,31 +328,11 @@ One dynamic CB
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 It turns out that reducing the number of distinct constant buffers
 referenced per frame by several thousand is a pretty big deal. Drivers
@@ -479,10 +359,6 @@ see that this change really made quite a dent.
 Loading time
 ~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 This was (for the most part) something I worked on just to make my life
 easier - as you can imagine, while writing this series, I've recorded
 lots of profiling and tests runs, and the loading time is a fixed cost I
@@ -494,19 +370,11 @@ time`_\ " commit.
 Initial: 9.29s
 ^^^^^^^^^^^^^^
 
-.. raw:: html
-
-   </p>
-
 First, I simply added a timer and code to print the loading time to the
 debug output window.
 
 Load materials once, not once per model: 4.54s
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. raw:: html
-
-   </p>
 
 One thing I noticed way back in January when I did my initial testing
 was that most materials seem to get loaded multiple times; there seems
@@ -519,10 +387,6 @@ loading times in half.
 FindAsset optimizations: 4.32s
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. raw:: html
-
-   </p>
-
 ``FindAsset`` is the function used in the asset manager to actually look
 up resources by name. With two simples changes to avoid unnecessary
 `path name resolution`_ and `string compares`_, the loading time loses
@@ -530,10 +394,6 @@ another 200ms.
 
 Better config file loading: 2.54s
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. raw:: html
-
-   </p>
 
 I mentioned this in "`A string processing rant`_\ ", but didn't actually
 merge the changes into the blog branch so far. Well, here you go: with
@@ -544,10 +404,6 @@ inefficient string handling. I wrote that rant for a reason.
 
 Improve shader input layout cache: 2.03s
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. raw:: html
-
-   </p>
 
 D3D11 wants shader input layouts to be created with a pointer to the
 bytecode of the shader it's going to be used with, to handle vertex
@@ -561,10 +417,6 @@ implemented that fix.
 Reduce temporary strings: 1.88s
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. raw:: html
-
-   </p>
-
 There were still a bunch of unnecessary string temporaries being
 created, which I found simply by looking at the call stack profiles of
 ``free`` calls during the loading phase (yet another useful application
@@ -574,10 +426,6 @@ later, this problem was resolved too.
 
 Actually share materials: 1.46s
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. raw:: html
-
-   </p>
 
 Finally, `this
 commit <https://github.com/rygorous/intel_occlusion_cull/commit/464503ca5bd657d7d6c6dc9e8a9144e1f223a278>`__
@@ -603,23 +451,7 @@ when setting up shaders and render states for the individual models:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -630,14 +462,6 @@ Render scene
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -711,35 +535,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -750,14 +550,6 @@ Original
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -831,35 +623,11 @@ Original
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -870,14 +638,6 @@ One dynamic CB
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -951,35 +711,11 @@ One dynamic CB
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -990,14 +726,6 @@ Share materials
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1071,31 +799,11 @@ Share materials
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 Again, this is somewhat extreme because there's so many different models
 around, but it illustrates the point: you really want to make sure
@@ -1108,27 +816,15 @@ loading time, so I didn't pursue the matter any further. :)
 The final rendering tweak
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 There's one more function with a high number of cache misses in the
 profiles I've been running, even though it's never been at the top. That
 function is ``AABBoxRasterizerSSE::RenderVisible``, which uses the
 (post-occlusion-test) visibility information to render all visible
 models. Here's the code:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     void AABBoxRasterizerSSE::RenderVisible(CPUTAssetSet **pAssetSet,    CPUTRenderParametersDX &renderParams,    UINT numAssetSets){    int count = 0;    for(UINT assetId = 0, modelId = 0; assetId < numAssetSets; assetId++)    {        for(UINT nodeId = 0; nodeId < GetAssetCount(); nodeId++)        {            CPUTRenderNode* pRenderNode = NULL;            CPUTResult result = pAssetSet[assetId]->GetAssetByIndex(nodeId, &pRenderNode);            ASSERT((CPUT_SUCCESS == result), _L ("Failed getting asset by index"));             if(pRenderNode->IsModel())            {                if(mpVisible[modelId])                {                    CPUTModelDX11* model = (CPUTModelDX11*)pRenderNode;                    model = (CPUTModelDX11*)pRenderNode;                    model->Render(renderParams);                    count++;                }                modelId++;                     }            pRenderNode->Release();        }    }    mNumCulled =  mNumModels - count;}
-
-.. raw:: html
-
-   </p>
 
 This code first enumerates all ``RenderNodes`` (a base class) in the
 active asset libraries, ask each of them "are you a model?", and if so
@@ -1148,17 +844,9 @@ culling pass; all we have to do is set an extra array that maps
 ``modelId``\ s to the corresponding models. Then the actual rendering
 code turns into:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     void AABBoxRasterizerSSE::RenderVisible(CPUTAssetSet **pAssetSet,    CPUTRenderParametersDX &renderParams,    UINT numAssetSets){    int count = 0;    for(modelId = 0; modelId < mNumModels; modelId++)    {        if(mpVisible[modelId])        {            mpModels[modelId]->Render(renderParams);            count++;        }    }    mNumCulled =  mNumModels - count;}
-
-.. raw:: html
-
-   </p>
 
 That already looks much better. But how much does it help?
 
@@ -1170,23 +858,7 @@ That already looks much better. But how much does it help?
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1197,14 +869,6 @@ Render scene
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1278,35 +942,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1317,14 +957,6 @@ Original
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1398,35 +1030,11 @@ Original
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1437,14 +1045,6 @@ One dynamic CB
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1518,35 +1118,11 @@ One dynamic CB
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1557,14 +1133,6 @@ Share materials
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1638,35 +1206,11 @@ Share materials
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1677,14 +1221,6 @@ Fix RenderVisible
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1758,31 +1294,11 @@ Fix RenderVisible
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 I rest my case.
 

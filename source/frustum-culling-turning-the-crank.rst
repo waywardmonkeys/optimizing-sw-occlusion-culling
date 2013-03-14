@@ -37,10 +37,6 @@ optimization coming right up. Let's get cracking.
 What we need here is some work ethic
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 So the whole point of my last post was that you can often make a big
 difference with fairly small changes, provided you know what you're
 doing - minimally invasive surgery, so to speak. This has lots of
@@ -68,17 +64,9 @@ Well, of course we can, but this time we're gonna have to roll up our
 sleeves and do some more invasive changes to our code. Let's first recap
 the struct layout:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     class TransformedAABBoxSSE{    // Methods elided    CPUTModelDX11 *mpCPUTModel;    __m128 *mWorldMatrix;    __m128 *mpBBVertexList;    __m128 *mpXformedPos;    __m128 *mCumulativeMatrix;     bool   *mVisible;    float   mOccludeeSizeThreshold;    __m128 *mViewPortMatrix;     float3 mBBCenter;    float3 mBBHalf;    bool   mInsideViewFrustum;    bool   mTooSmall;    float3 mBBCenterWS;    float3 mBBHalfWS;};
-
-.. raw:: html
-
-   </p>
 
 The part we care about right now is at the bottom: The two bools and the
 world-space bounding box. Now, it turns out that while one of the bools
@@ -91,10 +79,6 @@ it. That one's fairly easy.
 Ta data rhei
 ~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 For ``mInsideViewFrustum`` though, we're going to have to work a bit
 more. In particular, we're gonna have to understand the actual dataflow
 patterns to figure out where the right place to put it is.
@@ -103,17 +87,9 @@ We already know that it gets set in ``IsInsideViewFrustum``, because
 we've spent some time looking at that function already, although it's
 gotten shorter since we last saw it:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     void TransformedAABBoxSSE::IsInsideViewFrustum(CPUTCamera *pCamera){    mInsideViewFrustum = pCamera->mFrustum.IsVisible(mBBCenterWS,        mBBHalfWS);}
-
-.. raw:: html
-
-   </p>
 
 Unfortunately, unlike the previous case, ``IsInsideViewFrustum`` doesn't
 have a return value, so our boolean flag is actual state, and there's
@@ -122,17 +98,9 @@ two more methods that access it, one of which is *also* called
 two methods do completely different things - it's confusing and
 error-prone - but I digress. Both of the other methods are inline:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     inline void SetInsideViewFrustum(bool insideVF){    mInsideViewFrustum = insideVF;}inline bool IsInsideViewFrustum(){    return mInsideViewFrustum;}
-
-.. raw:: html
-
-   </p>
 
 And both of these get called from the outside, so we can't simply nuke
 them. However, lucky for us, these dependencies don't go very far
@@ -141,17 +109,9 @@ frustum cull-related functions get called. First, the function that
 updates our visibility state. Turns out there's only two callers. Let's
 look at the first one:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     void AABBoxRasterizerSSEST::IsInsideViewFrustum(CPUTCamera *pCamera){    mpCamera = pCamera;    for(UINT i = 0; i < mNumModels; i++)    {        mpTransformedAABBox[i].IsInsideViewFrustum(mpCamera);    }}
-
-.. raw:: html
-
-   </p>
 
 Straightforward enough. The second one is in the class
 ``AABBoxRasterizerSSEMT``, which does the exact same thing with some
@@ -167,17 +127,9 @@ we can't simply get rid of the per-model bookkeeping: it's actual state.
 Let's look at the callers of the no-parameters version of
 ``IsInsideViewFrustum`` to figure out where that state is read:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     void AABBoxRasterizerSSEST::TransformAABBoxAndDepthTest(){    mDepthTestTimer.StartTimer();    for(UINT i = 0; i < mNumModels; i++)    {        mpVisible[i] = false;        mpTransformedAABBox[i].SetVisible(&mpVisible[i]);          if(mpTransformedAABBox[i].IsInsideViewFrustum() &&           !mpTransformedAABBox[i].IsTooSmall(               mViewMatrix, mProjMatrix, mpCamera))        {            mpTransformedAABBox[i].TransformAABBox();            mpTransformedAABBox[i].RasterizeAndDepthTestAABBox(                mpRenderTargetPixels);        }         }    mDepthTestTime[mTimeCounter++] = mDepthTestTimer.StopTimer();    mTimeCounter = mTimeCounter >= AVG_COUNTER ? 0 : mTimeCounter;}
-
-.. raw:: html
-
-   </p>
 
 And again, there's a multi-threaded version that does pretty much the
 same, and no other callers.
@@ -185,17 +137,9 @@ same, and no other callers.
 Finally, searching for callers to ``SetInsideViewFrustum`` turns up
 exactly one hit, an inline function in ``AABBoxRasterizerSSE``:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     inline void ResetInsideFrustum(){    for(UINT i = 0; i < mNumModels; i++)    {        mpTransformedAABBox[i].SetInsideViewFrustum(true);    }}
-
-.. raw:: html
-
-   </p>
 
 As far as dataflow expeditions go, this one was pretty much as tame as
 it gets: it's all concentrated in a few source files, among functions
@@ -210,10 +154,6 @@ things for better cache efficiency?
 Shuffling data around
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 As we just saw, ``AABBoxRasterizerSSE`` and its subclasses are clearly
 in charge of running the whole frustum culling operation. Not only do
 they trigger the frustum culling computation, they also hold the array
@@ -223,17 +163,9 @@ the natural place to put our frustum calling state. So let's add an
 array of ``bool``\ s for the visibility state of the boxes, and make it
 parallel to the array we already have:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     class AABBoxRasterizerSSE : public AABBoxRasterizer{  // ...  TransformedAABBoxSSE *mpTransformedAABBox;  bool *mpBBoxVisible; // <--- this is new  // ...};
-
-.. raw:: html
-
-   </p>
 
 This needs to be allocated and freed, but all of that is perfectly
 routine, so I won't go into it. And once we've added it, we have a
@@ -249,10 +181,6 @@ fairly simple plan of attack:
    ``mpBBoxVisible`` at the call site.
 -  Get rid of ``TransformedAABBoxSSE::mInsideViewFrustum`` now that it's
    unreferenced.
-
-.. raw:: html
-
-   </p>
 
 Each of these items results in a handful of changes; the complete diff
 is
@@ -317,10 +245,6 @@ and see if we can push it a bit further.
 Up To Eleven
 ~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Now, since I'm cropping the screenshots heavily to make them fit in the
 blog layout, you can't see what I see. For all the screen shots we've
 seen so far, I've always made the columns narrow and sorted them so that
@@ -383,10 +307,6 @@ already.
 
 Conclusions
 ~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 I still stand by what I said in my previous post, namely that you don't
 need to go full-on Data-Oriented Design to get good performance on

@@ -18,10 +18,6 @@ this material in one place so I can refer back to it later as necessary.
 Meet the triangle
 ~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Let's just start by fast-forwarding through a whole bunch of things I
 assume you already know. If you don't, Wikipedia can help you, as can
 virtually any maths textbook that covers planar geometry.
@@ -66,10 +62,6 @@ and talk about the geometry of the situation for a second.
 Oriented edges
 ~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 |Positive half-space of v0v1| Consider, for a moment, the edge
 v\ :sub:`0`\ v\ :sub:`1` in the image above. The edge itself is a line
 segment. The corresponding line divides the plane into two halves (the
@@ -107,10 +99,6 @@ color-blind):
 -  Finally, the gray region is inside all three edges - and that's
    exactly our triangle.
 
-.. raw:: html
-
-   </p>
-
 And so we have the picture to go with my "intersection of 3 half-spaces"
 comment earlier. This means that all we need to figure out whether a
 point is in a triangle is to figure out whether it's in all three
@@ -123,10 +111,6 @@ whether a point is in the positive half-space or not.
 
 Area, length, orientation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 If we have the coordinates of all involved points, the answer turns out
 to be: determinants. And not just any old determinant will do; given the
@@ -251,10 +235,6 @@ distances. So it's important to know that they're equivalent.
 Edge functions
 ~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Now, let's get back to our original use for these determinant
 expressions: figuring out on which side of an edge a point lies. So
 let's pick an arbitrary point p and see how it relates to the edge
@@ -319,10 +299,6 @@ geometry.
 Why signed areas are a good idea
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Note that the statement about the edge functions summing up to the area
 of the triangle hold for *any* point, not just points inside the
 triangle. It's not clear how that's going to work when p is outside the
@@ -347,10 +323,6 @@ is a much hairier problem, but again, I digress.
 
 So where's the barycentric coordinates already?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 Now, this blog post is called "the barycentric conspiracy", but
 strangely, this far in, we don't seem to have seen a single barycentric
@@ -433,10 +405,6 @@ Cue scare chord.
 
 Barycentric interpolation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 And with that, we have all the math we need, but there's one more
 application that I want to bring up: As I've said before, the

@@ -15,10 +15,6 @@ about.
 The occlusion test rasterizer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 So far, we've mostly been looking at one rasterizer only - the one that
 actually renders the depth buffer we cull against, and even more
 precisely, only multi-threaded SSE version of it. But the occlusion
@@ -42,10 +38,6 @@ to be aware of, let's zoom out a bit and look at the bigger picture.
 Some open questions
 ~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 There's two questions you might have if you've been following this
 series closely so far. The first concerns a very visible difference
 between the depth and test rasterizers that you might have noticed if
@@ -61,23 +53,7 @@ the code right after bringing the test rasterizer up to date:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -88,14 +64,6 @@ Pass
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -169,35 +137,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -208,14 +152,6 @@ Render depth
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -289,35 +225,11 @@ Render depth
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -328,14 +240,6 @@ Occlusion test
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -409,31 +313,11 @@ Occlusion test
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 Now, the standard deviation actually got a fair bit lower with the
 rasterizer changes (originally, we were well above 0.1ms), but it's
@@ -500,10 +384,6 @@ What do we do about it, though?
 Let's start with something simple
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 As usual, we go for the low-hanging fruit first, and if you look at the
 left side of the screenshot I'll posted, you'll see *a lot* of blocks
 ("zones") on the left side of the screen. In fact, the count is much
@@ -544,10 +424,6 @@ and depth testing part.
 A closer look
 ~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Let's look a bit more closely at what's going on during rasterization:
 
 |Rasterization close-up|
@@ -559,24 +435,12 @@ screenshot:
 #. For some reason, we seem to have an odd mixture of really long tasks
    and very short ones.
 
-.. raw:: html
-
-   </p>
-
 The former shouldn't come as a surprise, since it's explicit in the
 code:
-
-.. raw:: html
-
-   <p>
 
 ::
 
     gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::TransformMeshes, this,    NUM_XFORMVERTS_TASKS, NULL, 0, "Xform Vertices", &mXformMesh);gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::BinTransformedMeshes, this,    NUM_XFORMVERTS_TASKS, &mXformMesh, 1, "Bin Meshes", &mBinMesh);gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::RasterizeBinnedTrianglesToDepthBuffer, this,    NUM_TILES, &mBinMesh, 1, "Raster Tris to DB", &mRasterize);    // Wait for the task setgTaskMgr.WaitForSet(mRasterize);
-
-.. raw:: html
-
-   </p>
 
 What the screenshot does show us, however, is the cost of those
 synchronization points. There sure is a lot of "air" in that diagram,
@@ -585,17 +449,9 @@ second point is more of a surprise though, because the code does in fact
 try pretty hard to make sure the tasks are evenly sized. There's a
 problem, though:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     void TransformedModelSSE::TransformMeshes(...){    if(mVisible)    {        // compute mTooSmall        if(!mTooSmall)        {            // transform verts        }    }}void TransformedModelSSE::BinTransformedTrianglesMT(...){    if(mVisible && !mTooSmall)    {        // bin triangles    }}
-
-.. raw:: html
-
-   </p>
 
 Just because we make sure each task handles an equal number of vertices
 (as happens for the "TransformMeshes" tasks) or an equal number of
@@ -606,10 +462,6 @@ close. Looks like we need to do some load balancing.
 
 Balancing act
 ~~~~~~~~~~~~~
-
-.. raw:: html
-
-   </p>
 
 To simplify things, I moved the computation of ``mTooSmall`` from
 ``TransformMeshes`` into ``IsVisible`` - right after the frustum culling
@@ -627,31 +479,15 @@ the individual transform and binning tasks.
 This is easy to do: ``DepthBufferRasterizerSSE`` gets a few more member
 variables
 
-.. raw:: html
-
-   <p>
-
 ::
 
     UINT *mpModelIndexA; // 'active' models = visible and not too smallUINT mNumModelsA;UINT mNumVerticesA;UINT mNumTrianglesA;
 
-.. raw:: html
-
-   </p>
-
 and two new member functions
-
-.. raw:: html
-
-   <p>
 
 ::
 
     inline void ResetActive(){    mNumModelsA = mNumVerticesA = mNumTrianglesA = 0;}inline void Activate(UINT modelId){    UINT activeId = mNumModelsA++;    assert(activeId < mNumModels1);    mpModelIndexA[activeId] = modelId;    mNumVerticesA += mpStartV1[modelId + 1] - mpStartV1[modelId];    mNumTrianglesA += mpStartT1[modelId + 1] - mpStartT1[modelId];}
-
-.. raw:: html
-
-   </p>
 
 that handle the accounting. The depth buffer rasterizer already kept
 cumulative vertex and triangle counts for all models; I added one more
@@ -661,17 +497,9 @@ vertex/triangle-counting logic.
 Then, at the end of the ``IsVisible`` pass (after the worker threads are
 done), I run
 
-.. raw:: html
-
-   <p>
-
 ::
 
     // Determine which models are activeResetActive();for (UINT i=0; i < mNumModels1; i++)    if(mpTransformedModels1[i].IsRasterized2DB())        Activate(i);
-
-.. raw:: html
-
-   </p>
 
 where ``IsRasterized2DB()`` is just a predicate that returns
 ``mIsVisible && !mTooSmall`` (it was already there, so I used it).
@@ -680,31 +508,15 @@ After that, all that remains is distributing work over the active models
 only, using ``mNumVerticesA`` and ``mNumTrianglesA``. This is as simple
 as turning the original loop in ``TransformMeshes``
 
-.. raw:: html
-
-   <p>
-
 ::
 
     for(UINT ss = 0; ss < mNumModels1; ss++)
 
-.. raw:: html
-
-   </p>
-
 into
-
-.. raw:: html
-
-   <p>
 
 ::
 
     for(UINT active = 0; active < mNumModelsA; active++){    UINT ss = mpModelIndexA[active];    // ...}
-
-.. raw:: html
-
-   </p>
 
 and the same for ``BinTransformedMeshes``. All in all, this took me
 about 10 minutes to write, debug and test. And with that, we should have
@@ -719,23 +531,7 @@ and binning. The question, as always, is: does it help?
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -746,14 +542,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -827,35 +615,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -866,14 +630,6 @@ Initial depth render
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -947,35 +703,11 @@ Initial depth render
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -986,14 +718,6 @@ Balance front end
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1067,31 +791,11 @@ Balance front end
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 Oh boy, does it ever. That's a 14.4% reduction *on top of what we
 already got last time*. And Telemetry tells us we're now doing a much
@@ -1115,10 +819,6 @@ whether this is just a configuration option or not; it probably is.
 Balancing the rasterizer back end
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
-
-   </p>
-
 Now we can't do the same trick for the actual triangle rasterization,
 because it works in tiles, and they just end up with uneven amounts of
 work depending on what's on the screen - there's nothing we can do about
@@ -1141,50 +841,26 @@ So what we do is insert a single task between
 binning and rasterization that determines the right order to process the
 tiles in, then make the actual rasterization depend on it:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::BinSort, this,    1, &mBinMesh, 1, "BinSort", &sortBins);gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::RasterizeBinnedTrianglesToDepthBuffer,    this, NUM_TILES, &sortBins, 1, "Raster Tris to DB", &mRasterize);   
-
-.. raw:: html
-
-   </p>
 
 So how does that function look? Well, all we have to do is count how
 many triangles ended up in each triangle, and then sort the tiles by
 that. The function is so short I'm just gonna show you the whole thing:
 
-.. raw:: html
-
-   <p>
-
 ::
 
     void DepthBufferRasterizerSSEMT::BinSort(VOID* taskData,    INT context, UINT taskId, UINT taskCount){    DepthBufferRasterizerSSEMT* me =        (DepthBufferRasterizerSSEMT*)taskData;    // Initialize sequence in identity order and compute total    // number of triangles in the bins for each tile    UINT tileTotalTris[NUM_TILES];    for(UINT tile = 0; tile < NUM_TILES; tile++)    {        me->mTileSequence[tile] = tile;        UINT base = tile * NUM_XFORMVERTS_TASKS;        UINT numTris = 0;        for (UINT bin = 0; bin < NUM_XFORMVERTS_TASKS; bin++)            numTris += me->mpNumTrisInBin[base + bin];        tileTotalTris[tile] = numTris;    }    // Sort tiles by number of triangles, decreasing.    std::sort(me->mTileSequence, me->mTileSequence + NUM_TILES,        [&](const UINT a, const UINT b)        {            return tileTotalTris[a] > tileTotalTris[b];         });}
-
-.. raw:: html
-
-   </p>
 
 where ``mTileSequence`` is just an array of ``UINT``\ s with
 ``NUM_TILES`` elements. Then we just rename the ``taskId`` parameter of
 ``RasterizeBinnedTrianglesToDepthBuffer`` to ``rawTaskId`` and start the
 function like this:
 
-.. raw:: html
-
-   <p>
-
 ::
 
         UINT taskId = mTileSequence[rawTaskId];
-
-.. raw:: html
-
-   </p>
 
 and presto, we have bin sorting. Here's the results:
 
@@ -1196,23 +872,7 @@ and presto, we have bin sorting. Here's the results:
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1223,14 +883,6 @@ Version
 .. raw:: html
 
    </th>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1304,35 +956,11 @@ sdev
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1343,14 +971,6 @@ Initial depth render
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1424,35 +1044,11 @@ Initial depth render
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1463,14 +1059,6 @@ Balance front end
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1544,35 +1132,11 @@ Balance front end
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    <tr>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1583,14 +1147,6 @@ Balance back end
 .. raw:: html
 
    </td>
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
 
 .. raw:: html
 
@@ -1664,31 +1220,11 @@ Balance back end
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </tr>
 
 .. raw:: html
 
-   </p>
-
-.. raw:: html
-
-   <p>
-
-.. raw:: html
-
    </table>
-
-.. raw:: html
-
-   </p>
 
 Once again, we're 20% down from where we started! Now let's check in
 Telemetry to make sure it worked correctly and we weren't just lucky:

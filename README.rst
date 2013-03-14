@@ -34,6 +34,8 @@ TODO
 
 * Code blocks all need to be fixed.
 * Tables need to be converted to ReStructuredText syntax.
+* Latex math needs to be using the right syntax.
+* Some images should probably be figures.
 
 .. _original material: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _blog: http://fgiesen.wordpress.com/

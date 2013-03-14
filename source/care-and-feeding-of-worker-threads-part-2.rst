@@ -2712,13 +2712,13 @@ then!
 .. _good reasons: http://www.humus.name/index.php?ID=255
 .. _Github: https://github.com/rygorous/intel_occlusion_cull/tree/blog
 
-.. |Imbalanced depth tests| image:: http://fgiesen.files.wordpress.com/2013/02/tmviz_depth_tests.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tmviz_depth_tests.png
-.. |Depth tests after striping| image:: http://fgiesen.files.wordpress.com/2013/02/tmviz_depth_tests_striped.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tmviz_depth_tests_striped.png
-.. |Depth buffer clears| image:: http://fgiesen.files.wordpress.com/2013/02/tmviz_clear_depth.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tmviz_clear_depth.png
-.. |Initial work distribution| image:: http://fgiesen.files.wordpress.com/2013/02/tmviz_initial_cropped.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tmviz_initial_cropped.png
-.. |Finished worker balance| image:: http://fgiesen.files.wordpress.com/2013/02/tmviz_alldone.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tmviz_alldone.png
+.. |Imbalanced depth tests| image:: images/tmviz_depth_tests.png
+   :target: images/tmviz_depth_tests.png
+.. |Depth tests after striping| image:: images/tmviz_depth_tests_striped.png
+   :target: images/tmviz_depth_tests_striped.png
+.. |Depth buffer clears| image:: images/tmviz_clear_depth.png
+   :target: images/tmviz_clear_depth.png
+.. |Initial work distribution| image:: images/tmviz_initial_cropped.png
+   :target: images/tmviz_initial_cropped.png
+.. |Finished worker balance| image:: images/tmviz_alldone.png
+   :target: images/tmviz_alldone.png

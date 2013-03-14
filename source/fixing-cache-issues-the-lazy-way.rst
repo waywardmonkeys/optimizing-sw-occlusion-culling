@@ -291,11 +291,11 @@ Until next time!
 .. _Github repository: https://github.com/rygorous/intel_occlusion_cull/commits/dev
 .. _Intel's Software Occlusion Culling sample: http://software.intel.com/en-us/vcsource/samples/software-occlusion-culling
 
-.. |And the bottleneck has moved| image:: http://fgiesen.files.wordpress.com/2013/01/hotspots_isinside_slower.png
-   :target: http://fgiesen.files.wordpress.com/2013/01/hotspots_isinside_slower.png
-.. |The code in question| image:: http://fgiesen.files.wordpress.com/2013/02/cycles_load.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/cycles_load.png
-.. |Hotspots after inlining bounding box data| image:: http://fgiesen.files.wordpress.com/2013/02/hotspots_bbox_inline.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/hotspots_bbox_inline.png
-.. |Hotspots with improved data density| image:: http://fgiesen.files.wordpress.com/2013/02/hotspots_data_density.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/hotspots_data_density.png
+.. |And the bottleneck has moved| image:: images/hotspots_isinside_slower.png
+   :target: images/hotspots_isinside_slower.png
+.. |The code in question| image:: images/cycles_load.png
+   :target: images/cycles_load.png
+.. |Hotspots after inlining bounding box data| image:: images/hotspots_bbox_inline.png
+   :target: images/hotspots_bbox_inline.png
+.. |Hotspots with improved data density| image:: images/hotspots_data_density.png
+   :target: images/hotspots_data_density.png

@@ -484,15 +484,15 @@ we learn how to turn all this into a rasterizer.
 .. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _like any non-self-intersecting planar polygon: http://en.wikipedia.org/wiki/Jordan_curve_theorem
 
-.. |A triangle.| image:: http://fgiesen.files.wordpress.com/2013/02/tri1.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tri1.png
-.. |Positive half-space of v0v1| image:: http://fgiesen.files.wordpress.com/2013/02/one_half_space1.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/one_half_space1.png
-.. |Three half-spaces at once| image:: http://fgiesen.files.wordpress.com/2013/02/three_half_spaces.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/three_half_spaces.png
-.. |Parallelogram for our triangle| image:: http://fgiesen.files.wordpress.com/2013/02/tri_area1.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tri_area1.png
-.. |Triangle with p inside| image:: http://fgiesen.files.wordpress.com/2013/02/tri_p_inside.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tri_p_inside.png
-.. |Triangle with p outside| image:: http://fgiesen.files.wordpress.com/2013/02/tri_p_outside.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tri_p_outside.png
+.. |A triangle.| image:: images/tri1.png
+   :target: images/tri1.png
+.. |Positive half-space of v0v1| image:: images/one_half_space1.png
+   :target: images/one_half_space1.png
+.. |Three half-spaces at once| image:: images/three_half_spaces.png
+   :target: images/three_half_spaces.png
+.. |Parallelogram for our triangle| image:: images/tri_area1.png
+   :target: images/tri_area1.png
+.. |Triangle with p inside| image:: images/tri_p_inside.png
+   :target: images/tri_p_inside.png
+.. |Triangle with p outside| image:: images/tri_p_outside.png
+   :target: images/tri_p_outside.png

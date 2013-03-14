@@ -2390,7 +2390,7 @@ posts in or so.
 .. _this comment: http://fgiesen.wordpress.com/2013/02/28/reshaping-dataflows/#comment-2466
 .. _Doug: http://fgiesen.wordpress.com/2013/02/28/reshaping-dataflows/#comment-2466
 
-.. |Time breakdown over posts| image:: http://fgiesen.files.wordpress.com/2013/03/post_breakdown1.png?w=497
-   :target: http://fgiesen.files.wordpress.com/2013/03/post_breakdown1.png
-.. |Reading from write-combined memory| image:: http://fgiesen.files.wordpress.com/2013/01/wc_slow1.png
-   :target: http://fgiesen.files.wordpress.com/2013/01/wc_slow1.png
+.. |Time breakdown over posts| image:: images/post_breakdown1.png
+   :target: images/post_breakdown1.png
+.. |Reading from write-combined memory| image:: images/wc_slow1.png
+   :target: images/wc_slow1.png

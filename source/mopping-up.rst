@@ -1812,7 +1812,7 @@ then!
 .. _Two: https://github.com/rygorous/intel_occlusion_cull/commit/bbbfb89a304c14617e58cb2cf1e0fa16bfe322a8
 .. _Github: https://github.com/rygorous/intel_occlusion_cull/commits/blog
 
-.. |Rendering hot spots| image:: http://fgiesen.files.wordpress.com/2013/03/hotspots_render.png
-   :target: http://fgiesen.files.wordpress.com/2013/03/hotspots_render.png
-.. |Render after dynamic CB fix| image:: http://fgiesen.files.wordpress.com/2013/03/hotspots_render_dyncb.png
-   :target: http://fgiesen.files.wordpress.com/2013/03/hotspots_render_dyncb.png
+.. |Rendering hot spots| image:: images/hotspots_render.png
+   :target: images/hotspots_render.png
+.. |Render after dynamic CB fix| image:: images/hotspots_render_dyncb.png
+   :target: images/hotspots_render_dyncb.png

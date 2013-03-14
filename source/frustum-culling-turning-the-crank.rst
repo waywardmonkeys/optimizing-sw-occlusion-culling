@@ -411,9 +411,9 @@ time!
 .. _What the hell is that doing there...: http://fgiesen.wordpress.com/2010/10/21/finish-your-derivations-please/
 .. _look at the code: https://github.com/rygorous/intel_occlusion_cull/commit/34d60ce0fc8d5409784d26b19c210d1f0033da81
 
-.. |Hotspots with improved data density| image:: http://fgiesen.files.wordpress.com/2013/02/hotspots_data_density.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/hotspots_data_density.png
-.. |Frustum culling, densely packed| image:: http://fgiesen.files.wordpress.com/2013/02/hotspots_frustum_dense.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/hotspots_frustum_dense.png
-.. |After changing packing scheme| image:: http://fgiesen.files.wordpress.com/2013/02/hotspots_packetize.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/hotspots_packetize.png
+.. |Hotspots with improved data density| image:: images/hotspots_data_density.png
+   :target: images/hotspots_data_density.png
+.. |Frustum culling, densely packed| image:: images/hotspots_frustum_dense.png
+   :target: images/hotspots_frustum_dense.png
+.. |After changing packing scheme| image:: images/hotspots_packetize.png
+   :target: images/hotspots_packetize.png

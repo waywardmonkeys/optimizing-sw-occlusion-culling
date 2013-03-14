@@ -481,5 +481,5 @@ take care!
 .. _guard band clipping: http://fgiesen.wordpress.com/2011/07/05/a-trip-through-the-graphics-pipeline-2011-part-5/
 .. _actual description: http://msdn.microsoft.com/en-us/library/windows/desktop/cc627092(v=vs.85).aspx#Triangle
 
-.. |A triangle.| image:: http://fgiesen.files.wordpress.com/2013/02/tri1.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tri1.png
+.. |A triangle.| image:: images/tri1.png
+   :target: images/tri1.png

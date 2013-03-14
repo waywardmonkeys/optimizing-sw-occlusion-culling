@@ -1726,19 +1726,19 @@ care, and until next time.
 .. _`"Frustum culling: turning the crank"`: http://fgiesen.wordpress.com/2013/02/02/frustum-culling-turning-the-crank/
 .. _Github: https://github.com/rygorous/intel_occlusion_cull/tree/blog
 
-.. |Rasterizer hotspots without early-out| image:: http://fgiesen.files.wordpress.com/2013/02/hotspots_rast2.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/hotspots_rast2.png
-.. |Initial Telemetry run| image:: http://fgiesen.files.wordpress.com/2013/02/tmviz_initial.png?w=497
-   :target: http://fgiesen.files.wordpress.com/2013/02/tmviz_initial.png
-.. |Telemetry: occluder visibility, zoomed| image:: http://fgiesen.files.wordpress.com/2013/02/tmviz_occluders_zoomed.png?w=497
-   :target: http://fgiesen.files.wordpress.com/2013/02/tmviz_occluders_zoomed.png
-.. |Telemetry: Occluder culling fixed| image:: http://fgiesen.files.wordpress.com/2013/02/tmviz_occluders_fixed.png?w=497
-   :target: http://fgiesen.files.wordpress.com/2013/02/tmviz_occluders_fixed.png
-.. |Rasterization close-up| image:: http://fgiesen.files.wordpress.com/2013/02/tmviz_raster_closeup.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tmviz_raster_closeup.png
-.. |Balanced rasterization front end| image:: http://fgiesen.files.wordpress.com/2013/02/tmvis_rasterbal1.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tmvis_rasterbal1.png
-.. |Initial bad rasterizer balance| image:: http://fgiesen.files.wordpress.com/2013/02/tmviz_initial_badbal.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tmviz_initial_badbal.png
-.. |Rasterizer fully balanced| image:: http://fgiesen.files.wordpress.com/2013/02/tmviz_rasterbal2.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/tmviz_rasterbal2.png
+.. |Rasterizer hotspots without early-out| image:: images/hotspots_rast2.png
+   :target: images/hotspots_rast2.png
+.. |Initial Telemetry run| image:: images/tmviz_initial.png
+   :target: images/tmviz_initial.png
+.. |Telemetry: occluder visibility, zoomed| image:: images/tmviz_occluders_zoomed.png
+   :target: images/tmviz_occluders_zoomed.png
+.. |Telemetry: Occluder culling fixed| image:: images/tmviz_occluders_fixed.png
+   :target: images/tmviz_occluders_fixed.png
+.. |Rasterization close-up| image:: images/tmviz_raster_closeup.png
+   :target: images/tmviz_raster_closeup.png
+.. |Balanced rasterization front end| image:: images/tmvis_rasterbal1.png
+   :target: images/tmvis_rasterbal1.png
+.. |Initial bad rasterizer balance| image:: images/tmviz_initial_badbal.png
+   :target: images/tmviz_initial_badbal.png
+.. |Rasterizer fully balanced| image:: images/tmviz_rasterbal2.png
+   :target: images/tmviz_rasterbal2.png

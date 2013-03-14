@@ -5327,7 +5327,7 @@ always, on `Github`_.
 .. _`"Frustum culling: turning the crank"`: http://fgiesen.wordpress.com/2013/02/02/frustum-culling-turning-the-crank/
 .. _Github: https://github.com/rygorous/intel_occlusion_cull/tree/blog
 
-.. |Rasterization hot spots| image:: http://fgiesen.files.wordpress.com/2013/02/hotspots_rast.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/hotspots_rast.png
-.. |Rasterizer hotspots without early-out| image:: http://fgiesen.files.wordpress.com/2013/02/hotspots_rast2.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/hotspots_rast2.png
+.. |Rasterization hot spots| image:: images/hotspots_rast.png
+   :target: images/hotspots_rast.png
+.. |Rasterizer hotspots without early-out| image:: images/hotspots_rast2.png
+   :target: images/hotspots_rast2.png

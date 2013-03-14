@@ -349,9 +349,9 @@ next time!
 .. _a bit more than two years ago: http://fgiesen.wordpress.com/2010/10/17/view-frustum-culling/
 .. _on GitHub: https://github.com/rygorous/intel_occlusion_cull/blob/dev/SoftwareOcclusionCulling/CPUT/CPUT/CPUTFrustum.cpp
 
-.. |Another profiling run| image:: http://fgiesen.files.wordpress.com/2013/01/hotspots_frustum.png
-   :target: http://fgiesen.files.wordpress.com/2013/01/hotspots_frustum.png
-.. |Frustum culling, conflict-free| image:: http://fgiesen.files.wordpress.com/2013/01/hotspots_frustum_fixed.png
-   :target: http://fgiesen.files.wordpress.com/2013/01/hotspots_frustum_fixed.png
-.. |And the bottleneck has moved| image:: http://fgiesen.files.wordpress.com/2013/01/hotspots_isinside_slower.png
-   :target: http://fgiesen.files.wordpress.com/2013/01/hotspots_isinside_slower.png
+.. |Another profiling run| image:: images/hotspots_frustum.png
+   :target: images/hotspots_frustum.png
+.. |Frustum culling, conflict-free| image:: images/hotspots_frustum_fixed.png
+   :target: images/hotspots_frustum_fixed.png
+.. |And the bottleneck has moved| image:: images/hotspots_isinside_slower.png
+   :target: images/hotspots_isinside_slower.png

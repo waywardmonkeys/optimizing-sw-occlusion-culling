@@ -500,13 +500,13 @@ desk.
 .. _my fork: https://github.com/rygorous/intel_occlusion_cull
 .. _Intel's Software Occlusion Culling: http://software.intel.com/en-us/vcsource/samples/software-occlusion-culling
 
-.. |Loading hotspots| image:: http://fgiesen.files.wordpress.com/2013/01/hotspots_loading.png
-   :target: http://fgiesen.files.wordpress.com/2013/01/hotspots_loading.png
-.. |Loading hotspots: calls to malloc()| image:: http://fgiesen.files.wordpress.com/2013/01/hotspots_malloc.png
-   :target: http://fgiesen.files.wordpress.com/2013/01/hotspots_malloc.png
-.. |Loading hotspots: calls to free()| image:: http://fgiesen.files.wordpress.com/2013/01/hotspots_free.png
-   :target: http://fgiesen.files.wordpress.com/2013/01/hotspots_free.png
-.. |Loading hotspots: calls to memcpy()| image:: http://fgiesen.files.wordpress.com/2013/01/hotspots_memcpy.png
-   :target: http://fgiesen.files.wordpress.com/2013/01/hotspots_memcpy.png
-.. |The final surprise| image:: http://fgiesen.files.wordpress.com/2013/01/hotspots_locale.png
-   :target: http://fgiesen.files.wordpress.com/2013/01/hotspots_locale.png
+.. |Loading hotspots| image:: images/hotspots_loading.png
+   :target: images/hotspots_loading.png
+.. |Loading hotspots: calls to malloc()| image:: images/hotspots_malloc.png
+   :target: images/hotspots_malloc.png
+.. |Loading hotspots: calls to free()| image:: images/hotspots_free.png
+   :target: images/hotspots_free.png
+.. |Loading hotspots: calls to memcpy()| image:: images/hotspots_memcpy.png
+   :target: images/hotspots_memcpy.png
+.. |The final surprise| image:: images/hotspots_locale.png
+   :target: images/hotspots_locale.png

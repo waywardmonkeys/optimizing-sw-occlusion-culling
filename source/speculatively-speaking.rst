@@ -3896,13 +3896,13 @@ including a list of things I didn't cover, and why not.
 .. _The care and feeding of worker threads: http://fgiesen.wordpress.com/2013/02/17/care-and-feeding-of-worker-threads-part-1/
 .. _last time we had an issue with branch mispredicts: http://fgiesen.wordpress.com/2013/02/16/depth-buffers-done-quick-part-2/
 
-.. |Store-to-load forwarding issues| image:: http://fgiesen.files.wordpress.com/2013/03/hotspots_stlf.png
-   :target: http://fgiesen.files.wordpress.com/2013/03/hotspots_stlf.png
-.. |Store forwarding fixed| image:: http://fgiesen.files.wordpress.com/2013/03/hotspots_stlf_fixed.png
-   :target: http://fgiesen.files.wordpress.com/2013/03/hotspots_stlf_fixed.png
-.. |Binning Machine Clears| image:: http://fgiesen.files.wordpress.com/2013/03/hotspots_binning_mc.png
-   :target: http://fgiesen.files.wordpress.com/2013/03/hotspots_binning_mc.png
-.. |Binning branch mispredicts| image:: http://fgiesen.files.wordpress.com/2013/03/hotspots_binning_mispred.png
-   :target: http://fgiesen.files.wordpress.com/2013/03/hotspots_binning_mispred.png
-.. |Binning with branching improved| image:: http://fgiesen.files.wordpress.com/2013/03/hotspots_binning_done.png
-   :target: http://fgiesen.files.wordpress.com/2013/03/hotspots_binning_done.png
+.. |Store-to-load forwarding issues| image:: images/hotspots_stlf.png
+   :target: images/hotspots_stlf.png
+.. |Store forwarding fixed| image:: images/hotspots_stlf_fixed.png
+   :target: images/hotspots_stlf_fixed.png
+.. |Binning Machine Clears| image:: images/hotspots_binning_mc.png
+   :target: images/hotspots_binning_mc.png
+.. |Binning branch mispredicts| image:: images/hotspots_binning_mispred.png
+   :target: images/hotspots_binning_mispred.png
+.. |Binning with branching improved| image:: images/hotspots_binning_done.png
+   :target: images/hotspots_binning_done.png

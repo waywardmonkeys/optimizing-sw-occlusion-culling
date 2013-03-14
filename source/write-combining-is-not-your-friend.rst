@@ -216,7 +216,7 @@ stab you in the back on the first opportunity. So be careful.
 .. _"coherency protocols": http://en.wikipedia.org/wiki/Cache_coherence#Coherency_protocol
 .. _write combining: http://en.wikipedia.org/wiki/Write-combining
 
-.. |Reading from write-combined memory| image:: http://fgiesen.files.wordpress.com/2013/01/wc_slow1.png
-   :target: http://fgiesen.files.wordpress.com/2013/01/wc_slow1.png
-.. |Without the read| image:: http://fgiesen.files.wordpress.com/2013/01/wc_faster.png
-   :target: http://fgiesen.files.wordpress.com/2013/01/wc_faster.png
+.. |Reading from write-combined memory| image:: images/wc_slow1.png
+   :target: images/wc_slow1.png
+.. |Without the read| image:: images/wc_faster.png
+   :target: images/wc_faster.png

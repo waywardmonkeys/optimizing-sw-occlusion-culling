@@ -3934,7 +3934,7 @@ and until next time!
 .. _"The barycentric conspiracy": http://fgiesen.wordpress.com/2013/02/06/the-barycentric-conspirac/
 .. _blog branch: https://github.com/rygorous/intel_occlusion_cull/tree/blog
 
-.. |8x8 pixels in raster-scan order| image:: http://fgiesen.files.wordpress.com/2013/02/raster.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/raster.png
-.. |8x8 pixels in a 2x2 tiled layout| image:: http://fgiesen.files.wordpress.com/2013/02/swizzle2x2.png
-   :target: http://fgiesen.files.wordpress.com/2013/02/swizzle2x2.png
+.. |8x8 pixels in raster-scan order| image:: images/raster.png
+   :target: images/raster.png
+.. |8x8 pixels in a 2x2 tiled layout| image:: images/swizzle2x2.png
+   :target: images/swizzle2x2.png

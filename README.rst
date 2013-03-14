@@ -32,7 +32,6 @@ arguments to see which formats are available.
 TODO
 ----
 
-* Links within the document need to be corrected.
 * Code blocks all need to be fixed.
 * Tables need to be converted to ReStructuredText syntax.
 

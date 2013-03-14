@@ -4,7 +4,7 @@ Frustum culling: turning the crank
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
 In the past few posts, we've been looking at Intel's `Software Occlusion
 Culling sample`_. This post is going to be a bit shorter than the others
@@ -324,7 +324,6 @@ And on that note, I'm gonna let this particular pipeline drain over the
 weekend so you have some time to let it all settle :). See you next
 time!
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _Software Occlusion Culling sample: http://software.intel.com/en-us/vcsource/samples/software-occlusion-culling
 .. _and the gorilla holding it: http://www.johndcook.com/blog/2011/07/19/you-wanted-banana/
 .. _this commit: https://github.com/rygorous/intel_occlusion_cull/commit/bd29f465c1f607e9e13a9df37d4fb5351877f66a

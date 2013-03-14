@@ -4,9 +4,10 @@ Triangle rasterization in practice
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
-Welcome back! The `previous post`_ gave us a lot of theoretical
+Welcome back! The :doc:`previous post <the-barycentric-conspiracy>`
+gave us a lot of theoretical
 groundwork on triangles. This time, let's turn it into a working
 triangle rasterizer. Again, no profiling or optimization this time, but
 there will be code, and it should get us set up to talk actual
@@ -368,8 +369,6 @@ we make it fast. I can promise you it will be worth your while, though,
 and I'll try to finish and upload the next post quickly. Until then,
 take care!
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
-.. _previous post: http://fgiesen.wordpress.com/2013/02/06/the-barycentric-conspirac/
 .. _guard band clipping: http://fgiesen.wordpress.com/2011/07/05/a-trip-through-the-graphics-pipeline-2011-part-5/
 .. _actual description: http://msdn.microsoft.com/en-us/library/windows/desktop/cc627092(v=vs.85).aspx#Triangle
 

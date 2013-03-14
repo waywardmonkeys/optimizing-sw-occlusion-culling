@@ -4,7 +4,7 @@ The care and feeding of worker threads, part 1
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
 It's time for another post! After all the time I've spent on squeezing
 about 20% out of the depth rasterizer, I figured it was time to change
@@ -41,8 +41,8 @@ Some open questions
 There's two questions you might have if you've been following this
 series closely so far. The first concerns a very visible difference
 between the depth and test rasterizers that you might have noticed if
-you ran the code. It's also visible in the data in `"Depth buffers done
-quick, part 1"`_, though I didn't talk about it at the time. I'm
+you ran the code. It's also visible in the data in :doc:`depth-buffers-done-quick-part-1`,
+though I didn't talk about it at the time. I'm
 talking, of course, about the large standard deviation we get for the
 execution time of the occlusion tests. Here's a set of measurements for
 the code right after bringing the test rasterizer up to date:
@@ -405,7 +405,7 @@ closer to 600 cycles. In total, frustum culling the approximately 1600
 occluder models takes up just above 1ms, as the captions helpfully say.
 For reference, the much smaller block that says "OccludeesVisible" and
 takes about 0.1ms? That one actually processes about 27000 models (it's
-the code we optimized in `"Frustum culling: turning the crank"`_).
+the code we optimized in :doc:`frustum-culling-turning-the-crank`).
 Again, *ouch*.
 
 Fortunately, there's a simple solution: don't use one task per model.
@@ -466,8 +466,8 @@ Balancing act
 To simplify things, I moved the computation of ``mTooSmall`` from
 ``TransformMeshes`` into ``IsVisible`` - right after the frustum culling
 itself. That required some shuffling arguments around, but it's exactly
-the kind of thing we already saw in `"Frustum culling: turning the
-crank"`_, so there's little point in going over it in detail again.
+the kind of thing we already saw in :doc:`frustum-culling-turning-the-crank`,
+so there's little point in going over it in detail again.
 
 Once ``TransformMeshes`` and ``BinTransformedTrianglesMT`` use the exact
 same condition - ``mVisible && !mTooSmall`` - we can determine the list
@@ -1254,12 +1254,9 @@ post on `Github`_, albeit without the Telemetry instrumentation for now
 dependencies that make it harder for people to compile the code. Take
 care, and until next time.
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _code: https://github.com/rygorous/intel_occlusion_cull/blob/4c64fd75/SoftwareOcclusionCulling/TransformedAABBoxSSE.cpp#L165
-.. _"Depth buffers done quick, part 1": http://fgiesen.wordpress.com/2013/02/11/depth-buffers-done-quick-part/
 .. _TBB: http://threadingbuildingblocks.org/
 .. _Telemetry: http://www.radgametools.com/telemetry.htm
-.. _`"Frustum culling: turning the crank"`: http://fgiesen.wordpress.com/2013/02/02/frustum-culling-turning-the-crank/
 .. _Github: https://github.com/rygorous/intel_occlusion_cull/tree/blog
 
 .. |Rasterizer hotspots without early-out| image:: images/hotspots_rast2.png

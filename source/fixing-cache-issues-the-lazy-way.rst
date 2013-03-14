@@ -4,7 +4,7 @@ Fixing cache issues, the lazy way
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
 Last time, we ended on a bit of a cliffhanger. We'll continue right
 where we left off, but first, I want to get a few things out of the way.
@@ -234,7 +234,6 @@ And that's it for today. I might do another post on the frustum culling
 actual rasterizer code next for a change of pace - haven't decided yet.
 Until next time!
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _Very Sleepy: http://www.codersnotes.com/sleepy
 .. _Github repository: https://github.com/rygorous/intel_occlusion_cull/commits/dev
 .. _Intel's Software Occlusion Culling sample: http://software.intel.com/en-us/vcsource/samples/software-occlusion-culling

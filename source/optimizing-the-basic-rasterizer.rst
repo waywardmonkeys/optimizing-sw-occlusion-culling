@@ -4,13 +4,14 @@ Optimizing the basic rasterizer
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
-`Last time`_, we saw how to write a simple triangle rasterizer, analyzed
-its behavior with regard to integer overflows, and discussed how to
-modify it to incorporate sub-pixel precision and fill rules. This time,
-we're going to make it run fast. But before we get started, I want to
-get one thing out of the way:
+:doc:`Last time <triangle-rasterization-in-practice>`, we saw how to
+write a simple triangle rasterizer, analyzed its behavior with regard
+to integer overflows, and discussed how to modify it to incorporate
+sub-pixel precision and fill rules. This time, we're going to make
+it run fast. But before we get started, I want to get one thing out
+of the way:
 
 Why this kind of algorithm?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,7 +82,7 @@ Luckily, we've seen everything we need to do that already.
 Simplifying the rasterizer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you go back to `"The barycentric conspiracy"`_, you'll notice that we
+If you go back to :doc:`the-barycentric-conspiracy`, you'll notice that we
 already derived an alternative formulation of the edge functions by
 rearranging and simplifying the determinant expression:
 
@@ -367,11 +368,8 @@ you earlier. There's a few simple details that I haven't explained yet
 there - next time. No more delays - actual changes to the rasterizer and
 our first hard-won performance improvements are upcoming!
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
-.. _Last time: http://fgiesen.wordpress.com/2013/02/08/triangle-rasterization-in-practice/
 .. _first: http://chrishecker.com/images/4/41/Gdmtex1.pdf
 .. _two: http://chrishecker.com/images/9/97/Gdmtex2.pdf
-.. _"The barycentric conspiracy": http://fgiesen.wordpress.com/2013/02/06/the-barycentric-conspirac/
 .. _Software Occlusion Culling demo: http://software.intel.com/en-us/vcsource/samples/software-occlusion-culling
 .. _branch: https://github.com/rygorous/intel_occlusion_cull/tree/hier_rast
 .. _"A Parallel Algorithm for Polygon Rasterization": http://people.csail.mit.edu/ericchan/bib/pdf/p17-pineda.pdf

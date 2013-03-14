@@ -4,7 +4,7 @@ Mopping up
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
 Welcome back! This post is going to be slightly different from the
 others. So far, I've attempted to group the material thematically, so
@@ -395,7 +395,7 @@ another 200ms.
 Better config file loading: 2.54s
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-I mentioned this in "`A string processing rant`_\ ", but didn't actually
+I mentioned this in :doc:`a-string-processing-rant`, but didn't actually
 merge the changes into the blog branch so far. Well, here you go: with
 `these`_ `three`_ `commits`_ that together rewrite a substantial portion
 of the config file reading, we lose almost another 2 seconds. Yes, that
@@ -1315,12 +1315,10 @@ out, and a few notes on the way I tend to approach performance problems.
 So all that will be in the next and final post of this series. Until
 then!
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _Track loading time: https://github.com/rygorous/intel_occlusion_cull/commit/5d4f83887034761c47bdd03ff4c834d7f24adc59
 .. _this change: https://github.com/rygorous/intel_occlusion_cull/commit/b4e29b2dfb43a040a9eb5ed5c074092766fe4ba7
 .. _path name resolution: https://github.com/rygorous/intel_occlusion_cull/commit/0b25f7de67f2631ac09456679f4857e86fdd5566
 .. _string compares: https://github.com/rygorous/intel_occlusion_cull/commit/40bde879d627ff4e129624a7230255656087f21a
-.. _A string processing rant: http://fgiesen.wordpress.com/2013/01/30/a-string-processing-rant/
 .. _these: https://github.com/rygorous/intel_occlusion_cull/commit/9b7648b1a1ba5b7c8e419645a2878491f36faa4e
 .. _three: https://github.com/rygorous/intel_occlusion_cull/commit/b5a62433664f5480ede40ab8f1945f3bb999e919
 .. _commits: https://github.com/rygorous/intel_occlusion_cull/commit/574e48e49ba09399420f43244576d8dbf50d4391

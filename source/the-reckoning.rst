@@ -4,7 +4,7 @@ Optimizing Software Occlusion Culling: The Reckoning
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
 Welcome back! Last time, I promised to end the series with a bit of
 reflection on the results. So, time to find out how far we've come!
@@ -1798,7 +1798,6 @@ urge to write another novella-sized series of posts again in the near
 future, I'll be sure to let you all know by the point I'm, oh, nine
 posts in or so.
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _Don't read back from the constant buffers we're writing: https://github.com/rygorous/intel_occlusion_cull/commit/e1839f69cf0680ad3339a5aa0f0b633bf71bcb68
 .. _Don't update debug counters in CPUTFrustum: https://github.com/rygorous/intel_occlusion_cull/commit/1e1b5cca743c5ce26d2d5e8570f1ac689b5ce7fb
 .. _Use only one dynamic constant buffer: https://github.com/rygorous/intel_occlusion_cull/commit/2504647a050e8c56ef2c4b4e03cce2ca7608343e

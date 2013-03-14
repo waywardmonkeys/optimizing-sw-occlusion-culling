@@ -4,7 +4,7 @@ Reshaping dataflows
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
 Welcome back! So far, we've spent quite some time "zoomed in" on various
 components of the Software Occlusion Culling demo, looking at various
@@ -468,7 +468,7 @@ several problems with this function, so let's go straight to a list:
 -  Similarly, ``fov`` and ``tanOfHalfFov`` only depend on the camera,
    and absolutely do not need to be recomputed once for every box. This
    is what gave us the ``_tan_pentium4`` cameo all the way back in
-   `"Frustum culling: turning the crank"`_, by the way.
+   :doc:`frustum-culling-turning-the-crank`, by the way.
 -  The view matrix, projection matrix and viewport matrix are also all
    camera or global constants. Again, no need to multiply these together
    for every box - the only matrix that is different between boxes is
@@ -1935,10 +1935,8 @@ the scope beyond optimizing functions by themselves.
 And as usual, the code for this time (plus some changes I haven't
 discussed yet) is up on `Github`_. Until next time!
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _corresponding commit: https://github.com/rygorous/intel_occlusion_cull/commit/36fed2dd3d098e4cace8adec67a415139a0049dd
 .. _whatever the projection matrix says: http://fgiesen.wordpress.com/2012/08/31/frustum-planes-from-the-projection-matrix/
-.. _`"Frustum culling: turning the crank"`: http://fgiesen.wordpress.com/2013/02/02/frustum-culling-turning-the-crank/
 .. _surgery: https://github.com/rygorous/intel_occlusion_cull/commit/2411249a28f9918fc574648d5c79af2fe702c1f8
 .. _two: https://github.com/rygorous/intel_occlusion_cull/commit/0fad7d4fb406eb57a45d59ed2187fbddffe08bc7
 .. _commits: https://github.com/rygorous/intel_occlusion_cull/commit/028a108d36b8bdb0d883d5baf82d1e922dd00fd1

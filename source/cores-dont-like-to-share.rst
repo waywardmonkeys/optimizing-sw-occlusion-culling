@@ -4,7 +4,7 @@ Cores don't like to share
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
 Two posts ago, I explained write combining and used a real-world example
 to show how badly it can go wrong if you're not careful. The last part
@@ -296,7 +296,6 @@ you get to cut the Gordian Knot. And to get this one faster, we'll have
 to improve our cache usage. Which is a topic for another post. Until
 next time!
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _Software Occlusion Culling: http://software.intel.com/en-us/vcsource/samples/software-occlusion-culling
 .. _a bit more than two years ago: http://fgiesen.wordpress.com/2010/10/17/view-frustum-culling/
 .. _on GitHub: https://github.com/rygorous/intel_occlusion_cull/blob/dev/SoftwareOcclusionCulling/CPUT/CPUT/CPUTFrustum.cpp

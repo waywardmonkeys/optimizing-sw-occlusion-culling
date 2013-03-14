@@ -4,13 +4,13 @@ Depth buffers done quick, part 2
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
-Welcome back! At the end of the `last post`_, we had just finished doing
-a first pass over the depth buffer rendering loops. Unfortunately, the
-first version of that post listed a final rendering time that was an
-outlier; more details in the post (which also has been updated to
-display the timing results in tables).
+Welcome back! At the end of the :doc:`last post <depth-buffers-done-quick-part-1>`,
+we had just finished doing a first pass over the depth buffer rendering
+loops. Unfortunately, the first version of that post listed a final rendering
+time that was an outlier; more details in the post (which also has been
+updated to display the timing results in tables).
 
 Notation matters
 ~~~~~~~~~~~~~~~~
@@ -22,7 +22,7 @@ presentation when performing two bitwise operations barely fits inside a
 single line of source code. So I whipped up two helper classes
 ``VecS32`` (32-bit signed integer) and ``VecF32`` (32-bit float) that
 are actual C++ implementations of the pseudo-code ``Vec4i`` I used in
-`"Optimizing the basic rasterizer"`_. I then converted a lot of the SIMD
+:doc:`optimizing-the-basic-rasterizer`. I then converted a lot of the SIMD
 code in the project to use those classes instead of dealing with
 ``__m128`` and ``__m128i`` directly.
 
@@ -444,7 +444,7 @@ With that out of the way, let's spiral further outwards and have a look
 at our triangle setup code. Most of it sets up edge equations etc. for 4
 triangles at a time; we only drop down to individual triangles once
 we're about to actually rasterize them. Most of this code works exactly
-as we saw in `"Optimizing the basic rasterizer"`_, but there's one bit
+as we saw in :doc:`optimizing-the-basic-rasterizer`, but there's one bit
 that performs a bit more work than necessary:
 
 ::
@@ -2245,8 +2245,7 @@ running out of easy targets. But while we've been starting intensely at
 code, we haven't really done any more in-depth profiling than just
 looking at overall timings in quite a while. Time to bring out VTune
 again and check if the situation's changed since our last detailed
-profiling run, way back at the start of `"Frustum culling: turning the
-crank"`_.
+profiling run, way back at the start of :doc:`frustum-culling-turning-the-crank`.
 
 Here's the results:
 
@@ -3856,11 +3855,7 @@ to close this chapter and start looking at other things. Which I will do
 in the next post. Until then, code for the new batch of changes is, as
 always, on `Github`_.
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
-.. _last post: http://fgiesen.wordpress.com/2013/02/11/depth-buffers-done-quick-part/
-.. _"Optimizing the basic rasterizer": http://fgiesen.wordpress.com/2013/02/10/optimizing-the-basic-rasterizer/
 .. _current triangle setup code: https://github.com/rygorous/intel_occlusion_cull/blob/db909a37/SoftwareOcclusionCulling/DepthBufferRasterizerSSEMT.cpp#L294
-.. _`"Frustum culling: turning the crank"`: http://fgiesen.wordpress.com/2013/02/02/frustum-culling-turning-the-crank/
 .. _Github: https://github.com/rygorous/intel_occlusion_cull/tree/blog
 
 .. |Rasterization hot spots| image:: images/hotspots_rast.png

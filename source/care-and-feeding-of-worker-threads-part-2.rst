@@ -4,9 +4,10 @@ The care and feeding of worker threads, part 2
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
-In the `previous post`_, we took a closer look at what our worker
+In the :doc:`previous post <care-and-feeding-of-worker-threads-part-1>`,
+we took a closer look at what our worker
 threads were doing and spent some time load-balancing the depth buffer
 rasterizer to reduce our overall latency. This time, we'll have a closer
 look at the rest of the system.
@@ -1963,8 +1964,6 @@ few bonus commits I'm going to discuss next time (spoiler alert!), when
 I take a closer look at the depth testing code and the binner. See you
 then!
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
-.. _previous post: http://fgiesen.wordpress.com/2013/02/17/care-and-feeding-of-worker-threads-part-1/
 .. _good reasons: http://www.humus.name/index.php?ID=255
 .. _Github: https://github.com/rygorous/intel_occlusion_cull/tree/blog
 

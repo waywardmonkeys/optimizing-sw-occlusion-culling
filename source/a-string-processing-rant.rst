@@ -4,7 +4,7 @@ A string processing rant
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
 Rants are not usually the style of this blog, but this one I just don't
 want to keep in. So if you're curious, the actual information content of
@@ -400,7 +400,6 @@ As my friend Casey Muratori would put it: **Everyone is fired.**
 And now excuse me while I apply some bandages and clean the blood off my
 desk.
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _my fork: https://github.com/rygorous/intel_occlusion_cull
 .. _Intel's Software Occlusion Culling: http://software.intel.com/en-us/vcsource/samples/software-occlusion-culling
 

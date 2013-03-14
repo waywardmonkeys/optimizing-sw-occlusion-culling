@@ -4,7 +4,7 @@ Depth buffers done quick, part 1
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
 Welcome back to yet another post on my series about Intel's `Software
 Occlusion Culling`_ demo. The past few posts were about triangle
@@ -1068,7 +1068,7 @@ barycentric interpolation to get the per-pixel depth value:
 
 $latex z = \\alpha z\_0 + \\beta z\_1 + \\gamma z\_2$
 
-Now, as I mentioned at the end of `"The barycentric conspiracy"`_, we
+Now, as I mentioned at the end of :doc:`the-barycentric-conspiracy`, we
 can use the alternative form
 
 $latex z = z\_0 + \\beta (z\_1 - z\_0) + \\gamma (z\_2 - z\_0)$
@@ -2839,11 +2839,9 @@ seem to generalize in any useful way. I'd appreciate some input before I
 start knocking out more posts like this :). Anyway, thanks for reading,
 and until next time!
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _Software Occlusion Culling: http://software.intel.com/en-us/vcsource/samples/software-occlusion-culling
 .. _this passage: https://github.com/rygorous/intel_occlusion_cull/blob/97eae9a8/SoftwareOcclusionCulling/DepthBufferRasterizerSSEMT.cpp#L445
 .. _before: http://fgiesen.wordpress.com/2011/01/17/texture-tiling-and-swizzling/
-.. _"The barycentric conspiracy": http://fgiesen.wordpress.com/2013/02/06/the-barycentric-conspirac/
 .. _blog branch: https://github.com/rygorous/intel_occlusion_cull/tree/blog
 
 .. |8x8 pixels in raster-scan order| image:: images/raster.png

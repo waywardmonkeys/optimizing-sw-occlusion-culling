@@ -4,7 +4,7 @@ The barycentric conspiracy
 :author: Fgiesen
 :category: Maths
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
 And welcome back to my impromptu optimization series. Today, we won't
 see a single line of code, nor a profiler screenshot. That's because our
@@ -449,7 +449,6 @@ might talk more about that at some point, but there's already more than
 enough material for one sitting in this post. So see you next time, when
 we learn how to turn all this into a rasterizer.
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _like any non-self-intersecting planar polygon: http://en.wikipedia.org/wiki/Jordan_curve_theorem
 
 .. |A triangle.| image:: images/tri1.png

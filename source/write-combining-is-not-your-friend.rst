@@ -4,7 +4,7 @@ Write combining is not your friend
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
 Most memory you deal with on a daily basis is cached; on CPUs, it's
 usually write-back cached. While dealing with processor caches can be
@@ -176,7 +176,6 @@ If you live by these rules, write-combining can be a powerful ally in
 writing high-performance graphics code. But never a friend - it *will*
 stab you in the back on the first opportunity. So be careful.
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _"coherency protocols": http://en.wikipedia.org/wiki/Cache_coherence#Coherency_protocol
 .. _write combining: http://en.wikipedia.org/wiki/Write-combining
 

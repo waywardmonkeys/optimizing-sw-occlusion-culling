@@ -4,7 +4,7 @@ Speculatively speaking
 :author: Fgiesen
 :category: Coding
 
-*This post is part of a series - go `here`_ for the index.*
+*This post is part of a series - go :doc:`here <index>` for the index.*
 
 Welcome back! Today, it's time to take a closer look at the triangle
 binning code, which we've only seen mentioned briefly so far, and we're
@@ -1001,7 +1001,7 @@ re-run with VTune confirms that the blocked loads are indeed gone:
 Vertex transformation
 ~~~~~~~~~~~~~~~~~~~~~
 
-`Last time`_, we modified the vertex transform code in the depth test
+:doc:`Last time <reshaping-dataflows>`, we modified the vertex transform code in the depth test
 rasterizer to get rid of the z-clamping and simplify the clipping logic.
 We also changed the logic to make better use of the regular structure of
 our input vertices. We don't have any special structure we can use to
@@ -1035,12 +1035,12 @@ waiting for us in the binning code:
 
 |Binning Machine Clears|
 
-Machine clears? We've seen them before, way back in "`Cores don't like
-to share`_\ ". And yes, they're again for memory ordering reasons. What
+Machine clears? We've seen them before, way back in :doc:`cores-dont-like-to-share`.
+And yes, they're again for memory ordering reasons. What
 did we do wrong this time? It turns out that the problematic code has
 been in there since the beginning, and ran just fine for quite a while,
-but ever since the scheduling optimizations we did in "`The care and
-feeding of worker threads`_\ ", we now have binning jobs running tightly
+but ever since the scheduling optimizations we did in :doc:`care-and-feeding-of-worker-threads-part-1`,
+we now have binning jobs running tightly
 packed enough to run into memory ordering issues. So what's the problem?
 Here's the code:
 
@@ -1856,7 +1856,7 @@ all these branches?
 Oh yeah, that. In particular, the first test (which checks for
 degenerate and back-facing triangles) will reject roughly half of all
 triangles and can be fairly random (as far as the CPU is concerned).
-Now, `last time we had an issue with branch mispredicts`_, we simply
+Now, :doc:`last time we had an issue with branch mispredicts <depth-buffers-done-quick-part-2>`, we simply
 removed the offending early-out. That's a really bad idea in this case -
 any triangles we don't reject here, we're gonna waste even more work on
 later. No, these tests really should all be done here.
@@ -2825,12 +2825,7 @@ and rendering code we've been intentionally ignoring for most of this
 series :), and after that I'll finish with a summary and wrap-up -
 including a list of things I didn't cover, and why not.
 
-.. _here: http://fgiesen.wordpress.com/2013/02/17/optimizing-sw-occlusion-culling-index/
 .. _speculative execution: http://en.wikipedia.org/wiki/Speculative_execution
-.. _Last time: http://fgiesen.wordpress.com/2013/02/28/reshaping-dataflows/
-.. _Cores don't like to share: http://fgiesen.wordpress.com/2013/01/31/cores-dont-like-to-share/
-.. _The care and feeding of worker threads: http://fgiesen.wordpress.com/2013/02/17/care-and-feeding-of-worker-threads-part-1/
-.. _last time we had an issue with branch mispredicts: http://fgiesen.wordpress.com/2013/02/16/depth-buffers-done-quick-part-2/
 
 .. |Store-to-load forwarding issues| image:: images/hotspots_stlf.png
    :target: images/hotspots_stlf.png

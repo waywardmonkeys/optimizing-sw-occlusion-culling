@@ -26,9 +26,41 @@ occluders, which we moved from the "vertex transform" to the "frustum
 cull" pass last time, used stale information. The relevant piece of the
 main loop is this:
 
-::
+.. code-block:: c++
+   :emphasize-lines: 24-25
 
-    mpCamera->SetNearPlaneDistance(1.0f);mpCamera->SetFarPlaneDistance(gFarClipDistance);mpCamera->Update();// If view frustum culling is enabled then determine which occluders// and occludees are inside the view frustum and run the software// occlusion culling on only the those modelsif(mEnableFCulling){    renderParams.mpCamera = mpCamera;    mpDBR->IsVisible(mpCamera);    mpAABB->IsInsideViewFrustum(mpCamera);}// if software occlusion culling is enabledif(mEnableCulling){    mpCamera->SetNearPlaneDistance(gFarClipDistance);    mpCamera->SetFarPlaneDistance(1.0f);    mpCamera->Update();    // Set the camera transforms so that the occluders can    // be transformed     mpDBR->SetViewProj(mpCamera->GetViewMatrix(),        (float4x4*)mpCamera->GetProjectionMatrix());    // (clear, render depth and perform occlusion test here)    mpCamera->SetNearPlaneDistance(1.0f);    mpCamera->SetFarPlaneDistance(gFarClipDistance);    mpCamera->Update();}
+    mpCamera->SetNearPlaneDistance(1.0f);
+    mpCamera->SetFarPlaneDistance(gFarClipDistance);
+    mpCamera->Update();
+
+    // If view frustum culling is enabled then determine which occluders
+    // and occludees are inside the view frustum and run the software
+    // occlusion culling on only the those models
+    if(mEnableFCulling)
+    {
+        renderParams.mpCamera = mpCamera;
+        mpDBR->IsVisible(mpCamera);
+        mpAABB->IsInsideViewFrustum(mpCamera);
+    }
+
+    // if software occlusion culling is enabled
+    if(mEnableCulling)
+    {
+        mpCamera->SetNearPlaneDistance(gFarClipDistance);
+        mpCamera->SetFarPlaneDistance(1.0f);
+        mpCamera->Update();
+
+        // Set the camera transforms so that the occluders can
+        // be transformed 
+        mpDBR->SetViewProj(mpCamera->GetViewMatrix(),
+            (float4x4*)mpCamera->GetProjectionMatrix());
+
+        // (clear, render depth and perform occlusion test here)
+
+        mpCamera->SetNearPlaneDistance(1.0f);
+        mpCamera->SetFarPlaneDistance(gFarClipDistance);
+        mpCamera->Update();
+    }
 
 Note how the call that actually updates the view-projection matrix
 (highlighted in red) runs *after* the frustum-culling pass. That's the
@@ -686,15 +718,27 @@ choice!) models at a time; an idea similar to the disk striping used for
 RAIDs. It turns out to be a really easy change to make: just replace the
 original loop
 
-::
+.. code-block:: c++
 
-    for(UINT i = start; i < end; i++){    // process model i}
+    for(UINT i = start; i < end; i++)
+    {
+        // process model i
+    }
 
 with the only marginally more complicated
 
-::
+.. code-block:: c++
 
-    static const UINT kChunkSize = 64;for(UINT base = taskId*kChunkSize; base < mNumModels;        base += mNumDepthTestTasks * kChunkSize){    UINT end = min(base + kChunkSize, mNumModels);    for(UINT i = base; i < end; i++)    {        // process model i    }}
+    static const UINT kChunkSize = 64;
+    for(UINT base = taskId*kChunkSize; base < mNumModels;
+            base += mNumDepthTestTasks * kChunkSize)
+    {
+        UINT end = min(base + kChunkSize, mNumModels);
+        for(UINT i = base; i < end; i++)
+        {
+            // process model i
+        }
+    }
 
 and we're done. Let's see the change:
 
@@ -1266,9 +1310,12 @@ Clearing the depth buffer. This is about 0.4ms, about a third of the
 time we spend depth testing, all tracing back to a single line in the
 code:
 
-::
+.. code-block:: c++
+   :emphasize-lines: 3
 
-        // Clear the depth buffer    mpCPURenderTargetPixels = (UINT*)mpCPUDepthBuf;    memset(mpCPURenderTargetPixels, 0, SCREENW * SCREENH * 4);
+    // Clear the depth buffer
+    mpCPURenderTargetPixels = (UINT*)mpCPUDepthBuf;
+    memset(mpCPURenderTargetPixels, 0, SCREENW * SCREENH * 4);
 
 Luckily, this one's really easy to fix. We could try and turn this into
 another separate group of tasks, but there's no need: we already have a

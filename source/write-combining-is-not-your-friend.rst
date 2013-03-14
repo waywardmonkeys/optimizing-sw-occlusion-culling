@@ -93,16 +93,23 @@ for us, this function runs at an absolutely appalling 9.721 clock cycles
 per instruction (CPI Rate)! Now it turns out that a large fraction is
 due to these innocent-looking lines that write to a constant buffer:
 
-::
+.. code-block:: c++
 
-        pCb = (CPUTModelConstantBuffer*)mapInfo.pData;    pCb->World               = world;    pCb->ViewProjection      = view * projection;    pCb->WorldViewProjection = world * pCb->ViewProjection;
+    pCb = (CPUTModelConstantBuffer*)mapInfo.pData;
+    pCb->World               = world;
+    pCb->ViewProjection      = view * projection;
+    pCb->WorldViewProjection = world * pCb->ViewProjection;
 
 Note how ``pCb->ViewProjection`` is used as an argument for a matrix
 multiply in the last line. Now, here's the simple fix:
 
-::
+.. code-block:: c++
 
-        XMMATRIX viewProj = view * projection;    pCb = (CPUTModelConstantBuffer*)mapInfo.pData;    pCb->World               = world;    pCb->ViewProjection      = viewProj;    pCb->WorldViewProjection = world * viewProj;
+    XMMATRIX viewProj = view * projection;
+    pCb = (CPUTModelConstantBuffer*)mapInfo.pData;
+    pCb->World               = world;
+    pCb->ViewProjection      = viewProj;
+    pCb->WorldViewProjection = world * viewProj;
 
 And here's the corresponding VTune profile:
 

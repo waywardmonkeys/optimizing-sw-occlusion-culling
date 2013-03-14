@@ -25,9 +25,16 @@ let's assume for now that our triangle vertex positions and point
 coordinates are given as integers too. The orientation test that
 computes the 2x2 determinant looks like this in code:
 
-::
+.. code-block:: c++
 
-    struct Point2D {    int x, y;};int orient2d(const Point2D& a, const Point2D& b, const Point2D& c){    return (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);}
+    struct Point2D {
+        int x, y;
+    };
+
+    int orient2d(const Point2D& a, const Point2D& b, const Point2D& c)
+    {
+        return (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);
+    }
 
 Now, all we have to do to rasterize our triangle is to loop over
 candidate pixels and check whether they're inside or not. We could do it
@@ -37,9 +44,37 @@ triangle are also going to be inside an axis-aligned bounding box around
 the triangle. And axis-aligned bounding boxes are both easy to compute
 and trivial to traverse. This gives:
 
-::
+.. code-block:: c++
 
-    void drawTri(const Point2D& v0, const Point2D& v1, const Point2D& v2){    // Compute triangle bounding box    int minX = min3(v0.x, v1.x, v2.x);    int minY = min3(v0.y, v1.y, v2.y);    int maxX = max3(v0.x, v1.x, v2.x);    int maxY = max3(v0.y, v1.y, v2.y);    // Clip against screen bounds    minX = max(minX, 0);    minY = max(minY, 0);    maxX = min(maxX, screenWidth - 1);    maxY = min(maxY, screenHeight - 1);    // Rasterize    Point2D p;    for (p.y = minY; p.y <= maxY; p.y++) {        for (p.x = minX; p.x <= maxX; p.x++) {            // Determine barycentric coordinates            int w0 = orient2d(v1, v2, p);            int w1 = orient2d(v2, v0, p);            int w2 = orient2d(v0, v1, p);            // If p is on or inside all edges, render pixel.            if (w0 >= 0 && w1 >= 0 && w2 >= 0)                renderPixel(p, w0, w1, w2);                   }    }}
+    void drawTri(const Point2D& v0, const Point2D& v1, const Point2D& v2)
+    {
+        // Compute triangle bounding box
+        int minX = min3(v0.x, v1.x, v2.x);
+        int minY = min3(v0.y, v1.y, v2.y);
+        int maxX = max3(v0.x, v1.x, v2.x);
+        int maxY = max3(v0.y, v1.y, v2.y);
+
+        // Clip against screen bounds
+        minX = max(minX, 0);
+        minY = max(minY, 0);
+        maxX = min(maxX, screenWidth - 1);
+        maxY = min(maxY, screenHeight - 1);
+
+        // Rasterize
+        Point2D p;
+        for (p.y = minY; p.y <= maxY; p.y++) {
+            for (p.x = minX; p.x <= maxX; p.x++) {
+                // Determine barycentric coordinates
+                int w0 = orient2d(v1, v2, p);
+                int w1 = orient2d(v2, v0, p);
+                int w2 = orient2d(v0, v1, p);
+
+                // If p is on or inside all edges, render pixel.
+                if (w0 >= 0 && w1 >= 0 && w2 >= 0)
+                    renderPixel(p, w0, w1, w2);           
+            }
+        }
+    }
 
 And that's it. That's a fully functional triangle rasterizer. In theory
 anyway - you need to write the ``min`` / ``max`` and ``renderPixel``
@@ -179,9 +214,30 @@ coordinates are now in 1/256ths of a pixel, but we still only perform
 one sample each pixel. Easy enough: (just sketching the updated main
 loop here)
 
-::
+.. code-block:: c++
 
-        static const int subStep = 256;    static const int subMask = subStep - 1;    // Round start position up to next integer multiple    // (we sample at integer pixel positions, so if our    // min is not an integer coordinate, that pixel won't    // be hit)    minX = (minX + subMask) & ~subMask;    minY = (minY + subMask) & ~subMask;    for (p.y = minY; p.y <= maxY; p.y += subStep) {        for (p.x = minX; p.x <= maxX; p.x += subStep) {            // Determine barycentric coordinates            int w0 = orient2d(v1, v2, p);            int w1 = orient2d(v2, v0, p);            int w2 = orient2d(v0, v1, p);            // If p is on or inside all edges, render pixel.            if (w0 >= 0 && w1 >= 0 && w2 >= 0)                renderPixel(p, w0, w1, w2);                   }    }
+    static const int subStep = 256;
+    static const int subMask = subStep - 1;
+
+    // Round start position up to next integer multiple
+    // (we sample at integer pixel positions, so if our
+    // min is not an integer coordinate, that pixel won't
+    // be hit)
+    minX = (minX + subMask) & ~subMask;
+    minY = (minY + subMask) & ~subMask;
+
+    for (p.y = minY; p.y <= maxY; p.y += subStep) {
+        for (p.x = minX; p.x <= maxX; p.x += subStep) {
+            // Determine barycentric coordinates
+            int w0 = orient2d(v1, v2, p);
+            int w1 = orient2d(v2, v0, p);
+            int w2 = orient2d(v0, v1, p);
+
+            // If p is on or inside all edges, render pixel.
+            if (w0 >= 0 && w1 >= 0 && w2 >= 0)
+                renderPixel(p, w0, w1, w2);           
+        }
+    }
 
 Simple enough, and it works just fine. Well, in theory it does, anyway -
 this code fragment is just as untested as the previous one, so be
@@ -293,9 +349,15 @@ edge.
 
 Now, our current rasterizer code:
 
-::
+.. code-block:: c++
 
-        int w0 = orient2d(v1, v2, p);    int w1 = orient2d(v2, v0, p);    int w2 = orient2d(v0, v1, p);    // If p is on or inside all edges, render pixel.    if (w0 >= 0 && w1 >= 0 && w2 >= 0)        renderPixel(p, w0, w1, w2);           
+    int w0 = orient2d(v1, v2, p);
+    int w1 = orient2d(v2, v0, p);
+    int w2 = orient2d(v0, v1, p);
+
+    // If p is on or inside all edges, render pixel.
+    if (w0 >= 0 && w1 >= 0 && w2 >= 0)
+        renderPixel(p, w0, w1, w2);
 
 Draws *all* points that fall on edges, no matter which kind - all the
 tests are for greater-or-equals to zero. That's okay for edge functions
@@ -307,15 +369,23 @@ to contemplate. Instead, we're going to use the fact that for integers,
 ``x > 0`` and ``x >= 1`` mean the same thing. Which means we can leave
 the tests as they are by first computing a per-edge offset once:
 
-::
+.. code-block:: c++
 
-      int bias0 = isTopLeft(v1, v2) ? 0 : -1;  int bias1 = isTopLeft(v2, v0) ? 0 : -1;  int bias2 = isTopLeft(v0, v1) ? 0 : -1;
+  int bias0 = isTopLeft(v1, v2) ? 0 : -1;
+  int bias1 = isTopLeft(v2, v0) ? 0 : -1;
+  int bias2 = isTopLeft(v0, v1) ? 0 : -1;
 
 and then changing our edge function computation slightly:
 
-::
+.. code-block:: c++
 
-        int w0 = orient2d(v1, v2, p) + bias0;    int w1 = orient2d(v2, v0, p) + bias1;    int w2 = orient2d(v0, v1, p) + bias2;    // If p is on or inside all edges, render pixel.    if (w0 >= 0 && w1 >= 0 && w2 >= 0)        renderPixel(p, w0, w1, w2);           
+    int w0 = orient2d(v1, v2, p) + bias0;
+    int w1 = orient2d(v2, v0, p) + bias1;
+    int w2 = orient2d(v0, v1, p) + bias2;
+
+    // If p is on or inside all edges, render pixel.
+    if (w0 >= 0 && w1 >= 0 && w2 >= 0)
+        renderPixel(p, w0, w1, w2);
 
 Full disclosure: this changes the barycentric coordinates we pass to
 ``renderPixel`` slightly (as does the subpixel-precision squeezing we

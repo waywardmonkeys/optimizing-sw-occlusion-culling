@@ -59,9 +59,16 @@ Culling sample`_. The last blog post ended with me showing this profile:
 and explaining that the actual issue is triggered by this (inlined)
 function:
 
-::
+.. code-block:: c++
 
-    void TransformedAABBoxSSE::IsInsideViewFrustum(CPUTCamera *pCamera){    float3 mBBCenterWS;    float3 mBBHalfWS;    mpCPUTModel->GetBoundsWorldSpace(&mBBCenterWS, &mBBHalfWS);    mInsideViewFrustum = pCamera->mFrustum.IsVisible(mBBCenterWS,        mBBHalfWS);}
+	void TransformedAABBoxSSE::IsInsideViewFrustum(CPUTCamera *pCamera)
+	{
+	    float3 mBBCenterWS;
+	    float3 mBBHalfWS;
+	    mpCPUTModel->GetBoundsWorldSpace(&mBBCenterWS, &mBBHalfWS);
+	    mInsideViewFrustum = pCamera->mFrustum.IsVisible(mBBCenterWS,
+	        mBBHalfWS);
+	}
 
 which spends a considerable amount of time missing the cache while
 trying to read the world-space bounding box from ``mpCPUTModel``. Well,
@@ -114,9 +121,12 @@ the outer loop in ``AABBoxRasterizerSSEMT::IsInsideViewFrustum``
 actually traverses an array of bounding boxes (type
 ``TransformedAABBoxSSE``) in order:
 
-::
+.. code-block:: c++
 
-    for(UINT i = start; i < end; i++){    mpTransformedAABBox[i].IsInsideViewFrustum(mpCamera);}
+    for(UINT i = start; i < end; i++)
+    {
+        mpTransformedAABBox[i].IsInsideViewFrustum(mpCamera);
+    }
 
 One linear traversal is all we need. We know that the hardware
 prefetcher is going to load that ahead for us - and by now, they're
@@ -129,9 +139,16 @@ And it turns out that in this example, all models are at a fixed
 position - we can determine the world-space bounding boxes once, at load
 time. Let's look at our function again:
 
-::
+.. code-block:: c++
 
-    void TransformedAABBoxSSE::IsInsideViewFrustum(CPUTCamera *pCamera){    float3 mBBCenterWS;    float3 mBBHalfWS;    mpCPUTModel->GetBoundsWorldSpace(&mBBCenterWS, &mBBHalfWS);    mInsideViewFrustum = pCamera->mFrustum.IsVisible(mBBCenterWS,        mBBHalfWS);}
+    void TransformedAABBoxSSE::IsInsideViewFrustum(CPUTCamera *pCamera)
+    {
+        float3 mBBCenterWS;
+        float3 mBBHalfWS;
+        mpCPUTModel->GetBoundsWorldSpace(&mBBCenterWS, &mBBHalfWS);
+        mInsideViewFrustum = pCamera->mFrustum.IsVisible(mBBCenterWS,
+            mBBHalfWS);
+    }
 
 Here's the punch line: all we really have to do is promote these two
 variables from locals to member variables, and move the
@@ -169,9 +186,29 @@ that gave us a considerable improvement. But we still only need 24 bytes
 out of every ``TransfomedAABBoxSSE``. How big are they? Let's have a
 look at the data members (methods elided):
 
-::
+.. code-block:: c++
 
-    class TransformedAABBoxSSE{    // Methods elided    CPUTModelDX11 *mpCPUTModel;    __m128 *mWorldMatrix;    __m128 *mpBBVertexList;    __m128 *mpXformedPos;    __m128 *mCumulativeMatrix;     UINT    mBBIndexList[AABB_INDICES]; /* 36 */    bool   *mVisible;    bool    mInsideViewFrustum;    float   mOccludeeSizeThreshold;    bool    mTooSmall;    __m128 *mViewPortMatrix;     float3 mBBCenter;    float3 mBBHalf;    float3 mBBCenterWS;    float3 mBBHalfWS;};
+    class TransformedAABBoxSSE
+    {
+        // Methods elided
+
+        CPUTModelDX11 *mpCPUTModel;
+        __m128 *mWorldMatrix;
+        __m128 *mpBBVertexList;
+        __m128 *mpXformedPos;
+        __m128 *mCumulativeMatrix; 
+        UINT    mBBIndexList[AABB_INDICES]; /* 36 */
+        bool   *mVisible;
+        bool    mInsideViewFrustum;
+        float   mOccludeeSizeThreshold;
+        bool    mTooSmall;
+        __m128 *mViewPortMatrix; 
+
+        float3 mBBCenter;
+        float3 mBBHalf;
+        float3 mBBCenterWS;
+        float3 mBBHalfWS;
+    };
 
 In a 32-bit environment, that gives us 226 bytes of payload per BBox
 (the actual size is a bit more, due to alignment padding). Of these 226
@@ -188,9 +225,28 @@ one and reorder some of the other fields so that the members we're going
 to access during frustum culling are close by each other (and hence more
 likely to hit the same cache line):
 
-::
+.. code-block:: c++
 
-    class TransformedAABBoxSSE{    // Methods elided    CPUTModelDX11 *mpCPUTModel;    __m128 *mWorldMatrix;    __m128 *mpBBVertexList;    __m128 *mpXformedPos;    __m128 *mCumulativeMatrix;     bool   *mVisible;    float   mOccludeeSizeThreshold;    __m128 *mViewPortMatrix;     float3 mBBCenter;    float3 mBBHalf;    bool   mInsideViewFrustum;    bool   mTooSmall;    float3 mBBCenterWS;    float3 mBBHalfWS;};
+    class TransformedAABBoxSSE
+    {
+        // Methods elided
+
+        CPUTModelDX11 *mpCPUTModel;
+        __m128 *mWorldMatrix;
+        __m128 *mpBBVertexList;
+        __m128 *mpXformedPos;
+        __m128 *mCumulativeMatrix; 
+        bool   *mVisible;
+        float   mOccludeeSizeThreshold;
+        __m128 *mViewPortMatrix; 
+
+        float3 mBBCenter;
+        float3 mBBHalf;
+        bool   mInsideViewFrustum;
+        bool   mTooSmall;
+        float3 mBBCenterWS;
+        float3 mBBHalfWS;
+    };
 
 Note that we're writing ``mInsideViewFrustum`` right after we read the
 bounding boxes, so it makes sense to make them adjacent. I put the

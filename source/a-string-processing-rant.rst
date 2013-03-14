@@ -87,9 +87,39 @@ How not to remove whitespace
 
 Let's cut straight to the chase: Here's the code.
 
-::
+.. code-block:: c++
 
-    void RemoveWhitespace(cString &szString){    // Remove leading whitespace    size_t nFirstIndex = szString.find_first_not_of(_L(' '));    if(nFirstIndex != cString::npos)    {        szString = szString.substr(nFirstIndex);    }    // Remove trailing newlines    size_t nLastIndex = szString.find_last_not_of(_L('\n'));    while(nLastIndex != szString.length()-1)    {        szString.erase(nLastIndex+1,1);        nLastIndex = szString.find_last_not_of(_L('\n'));    };    // Tabs    nLastIndex = szString.find_last_not_of(_L('\t'));    while(nLastIndex != szString.length()-1)    {        szString.erase(nLastIndex+1,1);        nLastIndex = szString.find_last_not_of(_L('\t'));    };    // Spaces    nLastIndex = szString.find_last_not_of(_L(' '));    while(nLastIndex != szString.length()-1)    {        szString.erase(nLastIndex+1,1);        nLastIndex = szString.find_last_not_of(_L(' '));    };}
+    void RemoveWhitespace(cString &szString)
+    {
+        // Remove leading whitespace
+        size_t nFirstIndex = szString.find_first_not_of(_L(' '));
+        if(nFirstIndex != cString::npos)
+        {
+            szString = szString.substr(nFirstIndex);
+        }
+
+        // Remove trailing newlines
+        size_t nLastIndex = szString.find_last_not_of(_L('\n'));
+        while(nLastIndex != szString.length()-1)
+        {
+            szString.erase(nLastIndex+1,1);
+            nLastIndex = szString.find_last_not_of(_L('\n'));
+        };
+        // Tabs
+        nLastIndex = szString.find_last_not_of(_L('\t'));
+        while(nLastIndex != szString.length()-1)
+        {
+            szString.erase(nLastIndex+1,1);
+            nLastIndex = szString.find_last_not_of(_L('\t'));
+        };
+        // Spaces
+        nLastIndex = szString.find_last_not_of(_L(' '));
+        while(nLastIndex != szString.length()-1)
+        {
+            szString.erase(nLastIndex+1,1);
+            nLastIndex = szString.find_last_not_of(_L(' '));
+        };
+    }
 
 As my current and former co-workers will confirm, I'm generally a fairly
 calm, relaxed person. However, in moments of extreme frustration, I will
@@ -125,9 +155,35 @@ That by itself would be bad enough. But it turns out that in context,
 not only is this function badly implemented, most of the work it does is
 completely unnecessary. Here's one of its main callers, ``ReadLine``:
 
-::
+.. code-block:: c++
 
-    CPUTResult ReadLine(cString &szString, FILE *pFile){    // TODO: 128 chars is a narrow line.  Why the limit?    // Is this not really reading a line, but instead just reading the next 128 chars to parse?    TCHAR   szCurrLine[128] = {0};    TCHAR *ret = fgetws(szCurrLine, 128, pFile);    if(ret != szCurrLine)    {        if(!feof(pFile))        {            return CPUT_ERROR_FILE_ERROR;        }    }    szString = szCurrLine;    RemoveWhitespace(szString);    // TODO: why are we checking feof twice in this loop?    // And, why are we using an error code to signify done?    // eof check should be performed outside ReadLine()    if(feof(pFile))    {        return CPUT_ERROR_FILE_ERROR;    }    return CPUT_SUCCESS;}
+    CPUTResult ReadLine(cString &szString, FILE *pFile)
+    {
+        // TODO: 128 chars is a narrow line.  Why the limit?
+        // Is this not really reading a line, but instead just reading the next 128 chars to parse?
+        TCHAR   szCurrLine[128] = {0};
+        TCHAR *ret = fgetws(szCurrLine, 128, pFile);
+        if(ret != szCurrLine)
+        {
+            if(!feof(pFile))
+            {
+                return CPUT_ERROR_FILE_ERROR;
+            }
+        }
+
+        szString = szCurrLine;
+        RemoveWhitespace(szString);
+
+        // TODO: why are we checking feof twice in this loop?
+        // And, why are we using an error code to signify done?
+        // eof check should be performed outside ReadLine()
+        if(feof(pFile))
+        {
+            return CPUT_ERROR_FILE_ERROR;
+        }
+
+        return CPUT_SUCCESS;
+    }
 
 I'll let the awesome comments speak for themselves - and for the record,
 no, this thing really is supposed to read a line, and the ad-hoc parser
@@ -150,17 +206,34 @@ non-whitespace part of the string begins and ends. You can either do
 this using C-style string handling or, if you want it to "feel more
 C++", you can express it by iterator manipulation:
 
-::
+.. code-block:: c++
 
-    static bool iswhite(int ch){    return ch == _L(' ') || ch == _L('\t') || ch == _L('\n');}templatestatic void RemoveWhitespace(Iter& start, Iter& end){    while (start < end && iswhite(*start))        ++start;    while (end > start && iswhite(*(end - 1)))        --end;}
+    static bool iswhite(int ch)
+    {
+        return ch == _L(' ') || ch == _L('\t') || ch == _L('\n');
+    }
+
+    template
+    static void RemoveWhitespace(Iter& start, Iter& end)
+    {
+        while (start < end && iswhite(*start))
+            ++start;
+
+        while (end > start && iswhite(*(end - 1)))
+            --end;
+    }
 
 Note that this is not only much shorter, it also correctly deals with
 all types of white space both at the beginning and the end of the line.
 Instead of the original string assignment we then do:
 
-::
+.. code-block:: c++
 
-        // TCHAR* obeys the iterator interface, so...    TCHAR* start = szCurrLine;    TCHAR* end = szCurrLine + tcslen(szCurrLine);    RemoveWhitespace(start, end);    szString.assign(start, end);
+    // TCHAR* obeys the iterator interface, so...
+    TCHAR* start = szCurrLine;
+    TCHAR* end = szCurrLine + tcslen(szCurrLine);
+    RemoveWhitespace(start, end);
+    szString.assign(start, end);
 
 Note how I use the iterator range form of ``assign`` to set up the
 string with a single copy. No more substring operations, no more
@@ -206,7 +279,7 @@ sequences into the ``std::wstring`` objects the rest of the code wants
 using standard C++ facilities? Really, all I need is a function with
 this signature:
 
-::
+.. code-block:: c++
 
     void AssignStr(cString& str, const char* begin, const char* end);
 
@@ -257,9 +330,29 @@ is not actually guaranteed. In any case, there's a problem, because we
 need to reserve the right number of wchar's in the output string, but
 it's not guaranteed to be safe to do this:
 
-::
+.. code-block:: c++
 
-    void AssignStr(cString& str, const char* begin, const char* end){    // patch a terminating NUL into *end    char* endPatch = (char*) end;    char oldEnd = *end;    *endPatch = 0;    // mbstowcs with NULL arg counts how many wchar_t's would be    // generated    size_t numOut = mbstowcs(NULL, begin, 0);    // make sure str has the right size    str.resize(numOut, ' ');    // convert characters including terminating NUL and hope it's    // going to be OK?    mbstowcs(&str[0], begin, numOut + 1);    // restore the original end    *endPatch = oldEnd;}
+    void AssignStr(cString& str, const char* begin, const char* end)
+    {
+        // patch a terminating NUL into *end
+        char* endPatch = (char*) end;
+        char oldEnd = *end;
+        *endPatch = 0;
+
+        // mbstowcs with NULL arg counts how many wchar_t's would be
+        // generated
+        size_t numOut = mbstowcs(NULL, begin, 0);
+
+        // make sure str has the right size
+        str.resize(numOut, ' ');
+
+        // convert characters including terminating NUL and hope it's
+        // going to be OK?
+        mbstowcs(&str[0], begin, numOut + 1);
+
+        // restore the original end
+        *endPatch = oldEnd;
+    }
 
 This might work, or it might not. As far as I know, it would be legal
 for a ``std::wstring`` implementation to only append a trailing NUL
@@ -301,9 +394,30 @@ encodings), the ``std::wstring`` we write to can dynamically resize, so
 there's not much that can go wrong. So I ended up with this
 implementation:
 
-::
+.. code-block:: c++
 
-    void AssignStr(cString& dest, const char* begin, const char* end){    dest.clear();    if (end <= begin)        return;    size_t len = end - begin;    size_t initial = len + 1; // assume most characters are 1-byte    dest.reserve(initial);    const char* p = start;    while (p < end)    {        wchar_t wc;        int len = mbtowc(&wc, p, end - p);        if (len < 1) // NUL byte or error            break;        p += len;        dest.push_back(wc);    }}
+    void AssignStr(cString& dest, const char* begin, const char* end)
+    {
+        dest.clear();
+        if (end <= begin)
+            return;
+
+        size_t len = end - begin;
+        size_t initial = len + 1; // assume most characters are 1-byte
+        dest.reserve(initial);
+
+        const char* p = start;
+        while (p < end)
+        {
+            wchar_t wc;
+            int len = mbtowc(&wc, p, end - p);
+            if (len < 1) // NUL byte or error
+                break;
+
+            p += len;
+            dest.push_back(wc);
+        }
+    }
 
 Looks fairly reasonable, right?
 
@@ -323,9 +437,37 @@ and start coding. So I figure that hey, if adding stuff to strings is
 apparently an expensive operation, well, let's amortize it, eh? So I go
 for this:
 
-::
+.. code-block:: c++
 
-    void AssignStr(cString& dest, const char* begin, const char* end){    dest.clear();    if (end <= begin)        return;    static const int NBUF = 64;    wchar_t buf[NBUF];    int nb = 0;    size_t len = end - begin;    size_t initial = len + 1; // assume most characters are 1-byte    dest.reserve(initial);    const char* p = start;    while (p < end)    {        int len = mbtowc(&buf[nb++], p, end - p);        if (len < 1) // NUL byte or error            break;        p += len;        if (p >= end || nb >= NBUF)        {            dest.append(buf, buf + nb);            nb = 0;        }    }}
+    void AssignStr(cString& dest, const char* begin, const char* end)
+    {
+        dest.clear();
+        if (end <= begin)
+            return;
+
+        static const int NBUF = 64;
+        wchar_t buf[NBUF];
+        int nb = 0;
+
+        size_t len = end - begin;
+        size_t initial = len + 1; // assume most characters are 1-byte
+        dest.reserve(initial);
+
+        const char* p = start;
+        while (p < end)
+        {
+            int len = mbtowc(&buf[nb++], p, end - p);
+            if (len < 1) // NUL byte or error
+                break;
+
+            p += len;
+            if (p >= end || nb >= NBUF)
+            {
+                dest.append(buf, buf + nb);
+                nb = 0;
+            }
+        }
+    }
 
 And it's *still* slow, and I *still* get a metric ton of bullshit
 inlined for that call. Turns out this happens because I call the general

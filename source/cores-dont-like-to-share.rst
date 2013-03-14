@@ -167,17 +167,85 @@ change, you can't get any memory ordering conflicts.
 Here's the declaration of the ``CPUTFrustum`` class (several methods
 omitted for brevity):
 
-::
+.. code-block:: c++
 
-    class CPUTFrustum{public:    float3 mpPosition[8];    float3 mpNormal[6];    UINT mNumFrustumVisibleModels;    UINT mNumFrustumCulledModels;    void InitializeFrustum( CPUTCamera *pCamera );    bool IsVisible(        const float3 &center,        const float3 &half    );};
+    class CPUTFrustum
+    {
+    public:
+        float3 mpPosition[8];
+        float3 mpNormal[6];
+
+        UINT mNumFrustumVisibleModels;
+        UINT mNumFrustumCulledModels;
+
+        void InitializeFrustum( CPUTCamera *pCamera );
+
+        bool IsVisible(
+            const float3 &center,
+            const float3 &half
+        );
+    };
 
 And here's the full code for ``IsVisible``, with some minor formatting
 changes to make it fit inside the layout (excerpting it would spoil the
 reveal):
 
-::
+.. code-block:: c++
 
-    bool CPUTFrustum::IsVisible(    const float3 &center,    const float3 &half){    // TODO:  There are MUCH more efficient ways to do this.    float3 pBBoxPosition[8];    pBBoxPosition[0] = center + float3(  half.x,  half.y,  half.z );    pBBoxPosition[1] = center + float3(  half.x,  half.y, -half.z );    pBBoxPosition[2] = center + float3(  half.x, -half.y,  half.z );    pBBoxPosition[3] = center + float3(  half.x, -half.y, -half.z );    pBBoxPosition[4] = center + float3( -half.x,  half.y,  half.z );    pBBoxPosition[5] = center + float3( -half.x,  half.y, -half.z );    pBBoxPosition[6] = center + float3( -half.x, -half.y,  half.z );    pBBoxPosition[7] = center + float3( -half.x, -half.y, -half.z );    // Test each bounding box point against each of the six frustum    // planes.    // Note: we need a point on the plane to compute the distance    // to the plane. We only need two of our frustum's points to do    // this. A corner vertex is on three of the six planes.  We    // need two of these corners to have a point on all six planes.    UINT pPointIndex[6] = {0,0,0,6,6,6};    UINT ii;    for( ii=0; ii<6; ii++ )    {        bool allEightPointsOutsidePlane = true;        float3 *pNormal = &mpNormal[ii];        float3 *pPlanePoint = &mpPosition[pPointIndex[ii]];        float3 planeToPoint;        float distanceToPlane;        UINT jj;        for( jj=0; jj<8; jj++ )        {            planeToPoint = pBBoxPosition[jj] - *pPlanePoint;            distanceToPlane = dot3( *pNormal, planeToPoint );            if( distanceToPlane < 0.0f )            {                allEightPointsOutsidePlane = false;                break; // from for.  No point testing any                // more points against this plane.            }        }        if( allEightPointsOutsidePlane )        {            mNumFrustumCulledModels++;            return false;        }    }    // Tested all eight points against all six planes and    // none of the planes had all eight points outside.    mNumFrustumVisibleModels++;    return true;}
+    bool CPUTFrustum::IsVisible(
+        const float3 &center,
+        const float3 &half
+    ){
+        // TODO:  There are MUCH more efficient ways to do this.
+        float3 pBBoxPosition[8];
+        pBBoxPosition[0] = center + float3(  half.x,  half.y,  half.z );
+        pBBoxPosition[1] = center + float3(  half.x,  half.y, -half.z );
+        pBBoxPosition[2] = center + float3(  half.x, -half.y,  half.z );
+        pBBoxPosition[3] = center + float3(  half.x, -half.y, -half.z );
+        pBBoxPosition[4] = center + float3( -half.x,  half.y,  half.z );
+        pBBoxPosition[5] = center + float3( -half.x,  half.y, -half.z );
+        pBBoxPosition[6] = center + float3( -half.x, -half.y,  half.z );
+        pBBoxPosition[7] = center + float3( -half.x, -half.y, -half.z );
+
+        // Test each bounding box point against each of the six frustum
+        // planes.
+        // Note: we need a point on the plane to compute the distance
+        // to the plane. We only need two of our frustum's points to do
+        // this. A corner vertex is on three of the six planes.  We
+        // need two of these corners to have a point on all six planes.
+        UINT pPointIndex[6] = {0,0,0,6,6,6};
+        UINT ii;
+        for( ii=0; ii<6; ii++ )
+        {
+            bool allEightPointsOutsidePlane = true;
+            float3 *pNormal = &mpNormal[ii];
+            float3 *pPlanePoint = &mpPosition[pPointIndex[ii]];
+            float3 planeToPoint;
+            float distanceToPlane;
+            UINT jj;
+            for( jj=0; jj<8; jj++ )
+            {
+                planeToPoint = pBBoxPosition[jj] - *pPlanePoint;
+                distanceToPlane = dot3( *pNormal, planeToPoint );
+                if( distanceToPlane < 0.0f )
+                {
+                    allEightPointsOutsidePlane = false;
+                    break; // from for.  No point testing any
+                    // more points against this plane.
+                }
+            }
+            if( allEightPointsOutsidePlane )
+            {
+                mNumFrustumCulledModels++;
+                return false;
+            }
+        }
+
+        // Tested all eight points against all six planes and
+        // none of the planes had all eight points outside.
+        mNumFrustumVisibleModels++;
+        return true;
+    }
 
 Can you see what's going wrong? Try to figure it out yourself. It's a
 far more powerful lesson if you discover it yourself. Scroll down if you
@@ -264,9 +332,16 @@ And more to the point, the problem actually isn't in
 ``TransformedAABBoxSSE::IsInsideViewFrustum``, which it calls, and which
 does get inlined into ``AABBoxRasterizerSSEMT::IsInsideViewFrustum``:
 
-::
+.. code-block:: c++
 
-    void TransformedAABBoxSSE::IsInsideViewFrustum(CPUTCamera *pCamera){    float3 mBBCenterWS;    float3 mBBHalfWS;    mpCPUTModel->GetBoundsWorldSpace(&mBBCenterWS, &mBBHalfWS);    mInsideViewFrustum = pCamera->mFrustum.IsVisible(mBBCenterWS,        mBBHalfWS);}
+    void TransformedAABBoxSSE::IsInsideViewFrustum(CPUTCamera *pCamera)
+    {
+        float3 mBBCenterWS;
+        float3 mBBHalfWS;
+        mpCPUTModel->GetBoundsWorldSpace(&mBBCenterWS, &mBBHalfWS);
+        mInsideViewFrustum = pCamera->mFrustum.IsVisible(mBBCenterWS,
+            mBBHalfWS);
+    }
 
 No smoking guns here either - a getter call to retrieve the bounding box
 center and half-extents, followed by the call to ``IsVisible``. And no,

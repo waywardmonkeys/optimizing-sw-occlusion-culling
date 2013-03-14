@@ -40,24 +40,53 @@ fairly basic stuff) or the modifications to the code (just glorified
 search and replace), but I will show you one before-after example to
 illustrate why I did it:
 
-::
+.. code-block:: c++
 
-    col = _mm_add_epi32(colOffset, _mm_set1_epi32(startXx));__m128i aa0Col = _mm_mullo_epi32(aa0, col);__m128i aa1Col = _mm_mullo_epi32(aa1, col);__m128i aa2Col = _mm_mullo_epi32(aa2, col);row = _mm_add_epi32(rowOffset, _mm_set1_epi32(startYy));__m128i bb0Row = _mm_add_epi32(_mm_mullo_epi32(bb0, row), cc0);__m128i bb1Row = _mm_add_epi32(_mm_mullo_epi32(bb1, row), cc1);__m128i bb2Row = _mm_add_epi32(_mm_mullo_epi32(bb2, row), cc2);__m128i sum0Row = _mm_add_epi32(aa0Col, bb0Row);__m128i sum1Row = _mm_add_epi32(aa1Col, bb1Row);__m128i sum2Row = _mm_add_epi32(aa2Col, bb2Row);
+    col = _mm_add_epi32(colOffset, _mm_set1_epi32(startXx));
+    __m128i aa0Col = _mm_mullo_epi32(aa0, col);
+    __m128i aa1Col = _mm_mullo_epi32(aa1, col);
+    __m128i aa2Col = _mm_mullo_epi32(aa2, col);
+
+    row = _mm_add_epi32(rowOffset, _mm_set1_epi32(startYy));
+    __m128i bb0Row = _mm_add_epi32(_mm_mullo_epi32(bb0, row), cc0);
+    __m128i bb1Row = _mm_add_epi32(_mm_mullo_epi32(bb1, row), cc1);
+    __m128i bb2Row = _mm_add_epi32(_mm_mullo_epi32(bb2, row), cc2);
+
+    __m128i sum0Row = _mm_add_epi32(aa0Col, bb0Row);
+    __m128i sum1Row = _mm_add_epi32(aa1Col, bb1Row);
+    __m128i sum2Row = _mm_add_epi32(aa2Col, bb2Row);
 
 turns into:
 
-::
+.. code-block:: c++
 
-    VecS32 col = colOffset + VecS32(startXx);VecS32 aa0Col = aa0 * col;VecS32 aa1Col = aa1 * col;VecS32 aa2Col = aa2 * col;VecS32 row = rowOffset + VecS32(startYy);VecS32 bb0Row = bb0 * row + cc0;VecS32 bb1Row = bb1 * row + cc1;VecS32 bb2Row = bb2 * row + cc2;VecS32 sum0Row = aa0Col + bb0Row;VecS32 sum1Row = aa1Col + bb1Row;VecS32 sum2Row = aa2Col + bb2Row;
+    VecS32 col = colOffset + VecS32(startXx);
+    VecS32 aa0Col = aa0 * col;
+    VecS32 aa1Col = aa1 * col;
+    VecS32 aa2Col = aa2 * col;
+
+    VecS32 row = rowOffset + VecS32(startYy);
+    VecS32 bb0Row = bb0 * row + cc0;
+    VecS32 bb1Row = bb1 * row + cc1;
+    VecS32 bb2Row = bb2 * row + cc2;
+
+    VecS32 sum0Row = aa0Col + bb0Row;
+    VecS32 sum1Row = aa1Col + bb1Row;
+    VecS32 sum2Row = aa2Col + bb2Row;
 
 I don't know about you, but I already find this *much* easier to parse
 visually, and the generated code is the same. And as soon as I had this,
 I just got rid of most of the explicit temporaries since they're never
 referenced again anyway:
 
-::
+.. code-block:: c++
 
-    VecS32 col = VecS32(startXx) + colOffset;VecS32 row = VecS32(startYy) + rowOffset;VecS32 sum0Row = aa0 * col + bb0 * row + cc0;VecS32 sum1Row = aa1 * col + bb1 * row + cc1;VecS32 sum2Row = aa2 * col + bb2 * row + cc2;
+    VecS32 col = VecS32(startXx) + colOffset;
+    VecS32 row = VecS32(startYy) + rowOffset;
+
+    VecS32 sum0Row = aa0 * col + bb0 * row + cc0;
+    VecS32 sum1Row = aa1 * col + bb1 * row + cc1;
+    VecS32 sum2Row = aa2 * col + bb2 * row + cc2;
 
 And suddenly, with the ratio of syntactic noise to actual content back
 to a reasonable range, it's actually possible to see what's really going
@@ -445,9 +474,14 @@ we're about to actually rasterize them. Most of this code works exactly
 as we saw in :doc:`optimizing-the-basic-rasterizer`, but there's one bit
 that performs a bit more work than necessary:
 
-::
+.. code-block:: c++
 
-    // Compute triangle areaVecS32 triArea = A0 * xFormedFxPtPos[0].X;triArea += B0 * xFormedFxPtPos[0].Y;triArea += C0;VecF32 oneOverTriArea = VecF32(1.0f) / itof(triArea);
+    // Compute triangle area
+    VecS32 triArea = A0 * xFormedFxPtPos[0].X;
+    triArea += B0 * xFormedFxPtPos[0].Y;
+    triArea += C0;
+
+    VecF32 oneOverTriArea = VecF32(1.0f) / itof(triArea);
 
 Contrary to what the comment says :), this actually computes twice the
 (signed) triangle area and is used to normalize the barycentric
@@ -458,16 +492,26 @@ determinant expression. Since the area is computed in integers, this
 gives exactly the same results with one operations less, and without the
 dependency on ``C0``:
 
-::
+.. code-block:: c++
 
-    VecS32 triArea = B2 * A1 - B1 * A2;VecF32 oneOverTriArea = VecF32(1.0f) / itof(triArea);
+    VecS32 triArea = B2 * A1 - B1 * A2;
+    VecF32 oneOverTriArea = VecF32(1.0f) / itof(triArea);
 
 And talking about the barycentric coordinates, there's also this part of
 the setup that is performed per triangle, not across 4 triangles:
 
-::
+.. code-block:: c++
 
-    VecF32 zz[3], oneOverW[3];for(int vv = 0; vv < 3; vv++){    zz[vv] = VecF32(xformedvPos[vv].Z.lane[lane]);    oneOverW[vv] = VecF32(xformedvPos[vv].W.lane[lane]);}VecF32 oneOverTotalArea(oneOverTriArea.lane[lane]);zz[1] = (zz[1] - zz[0]) * oneOverTotalArea;zz[2] = (zz[2] - zz[0]) * oneOverTotalArea;
+    VecF32 zz[3], oneOverW[3];
+    for(int vv = 0; vv < 3; vv++)
+    {
+        zz[vv] = VecF32(xformedvPos[vv].Z.lane[lane]);
+        oneOverW[vv] = VecF32(xformedvPos[vv].W.lane[lane]);
+    }
+
+    VecF32 oneOverTotalArea(oneOverTriArea.lane[lane]);
+    zz[1] = (zz[1] - zz[0]) * oneOverTotalArea;
+    zz[2] = (zz[2] - zz[0]) * oneOverTotalArea;
 
 The latter two lines perform the half-barycentric interpolation setup;
 the original code multiplied the ``zz[i]`` by ``oneOverTotalArea`` here
@@ -477,9 +521,13 @@ are really scalar computations, and we can perform them while we're
 still dealing with 4 triangles at a time! So right after the triangle
 area computation, we now do this:
 
-::
+.. code-block:: c++
 
-    // Z setupVecF32 Z[3];Z[0] = xformedvPos[0].Z;Z[1] = (xformedvPos[1].Z - Z[0]) * oneOverTriArea;Z[2] = (xformedvPos[2].Z - Z[0]) * oneOverTriArea;
+    // Z setup
+    VecF32 Z[3];
+    Z[0] = xformedvPos[0].Z;
+    Z[1] = (xformedvPos[1].Z - Z[0]) * oneOverTriArea;
+    Z[2] = (xformedvPos[2].Z - Z[0]) * oneOverTriArea;
 
 Which allows us to get rid of the second half of the earlier block - all
 we have to do is load ``zz`` from ``Z[vv]`` rather than
@@ -963,15 +1011,26 @@ out to be quite interesting.
 So, where do these triangles with empty bounding boxes come from? The
 actual per-triangle assignments
 
-::
+.. code-block:: c++
 
-    int startXx = startX.lane[lane];int endXx   = endX.lane[lane];
+    int startXx = startX.lane[lane];
+    int endXx   = endX.lane[lane];
 
 just get their values from these vectors:
 
-::
+.. code-block:: c++
 
-    // Use bounding box traversal strategy to determine which// pixels to rasterize VecS32 startX = vmax(    vmin(        vmin(xFormedFxPtPos[0].X, xFormedFxPtPos[1].X),        xFormedFxPtPos[2].X), VecS32(tileStartX))    & VecS32(~1);VecS32 endX = vmin(    vmax(        vmax(xFormedFxPtPos[0].X, xFormedFxPtPos[1].X),        xFormedFxPtPos[2].X) + VecS32(1), VecS32(tileEndX));
+    // Use bounding box traversal strategy to determine which
+    // pixels to rasterize 
+    VecS32 startX = vmax(
+        vmin(
+            vmin(xFormedFxPtPos[0].X, xFormedFxPtPos[1].X),
+            xFormedFxPtPos[2].X), VecS32(tileStartX))
+        & VecS32(~1);
+    VecS32 endX = vmin(
+        vmax(
+            vmax(xFormedFxPtPos[0].X, xFormedFxPtPos[1].X),
+            xFormedFxPtPos[2].X) + VecS32(1), VecS32(tileEndX));
 
 Horrible line-breaking aside (I just need to switch to a wider layout),
 this is fairly straightforward: ``startX`` is determined as the minimum
@@ -995,18 +1054,45 @@ The relevant piece of code is
 `here <https://github.com/rygorous/intel_occlusion_cull/blob/2d1282e5/SoftwareOcclusionCulling/TransformedMeshSSE.cpp#L127>`__.
 The bounding box determination for the whole triangle looks as follows:
 
-::
+.. code-block:: c++
 
-    VecS32 vStartX = vmax(    vmin(        vmin(xFormedFxPtPos[0].X, xFormedFxPtPos[1].X),         xFormedFxPtPos[2].X), VecS32(0));VecS32 vEndX   = vmin(    vmax(        vmax(xFormedFxPtPos[0].X, xFormedFxPtPos[1].X),        xFormedFxPtPos[2].X) + VecS32(1), VecS32(SCREENW));
+    VecS32 vStartX = vmax(
+        vmin(
+            vmin(xFormedFxPtPos[0].X, xFormedFxPtPos[1].X), 
+            xFormedFxPtPos[2].X), VecS32(0));
+    VecS32 vEndX   = vmin(
+        vmax(
+            vmax(xFormedFxPtPos[0].X, xFormedFxPtPos[1].X),
+            xFormedFxPtPos[2].X) + VecS32(1), VecS32(SCREENW));
 
 Okay, that's basically the same we saw before, only we're clipping
 against the screen bounds not the tile bounds. And the same happens with
 Y. Nothing to see here so far, move along. But then, what does the code
 do with these bounds? Let's have a look:
 
-::
+.. code-block:: c++
 
-    // Convert bounding box in terms of pixels to bounding box// in terms of tilesint startX = max(vStartX.lane[i]/TILE_WIDTH_IN_PIXELS, 0);int endX   = min(vEndX.lane[i]/TILE_WIDTH_IN_PIXELS,                 SCREENW_IN_TILES-1);int startY = max(vStartY.lane[i]/TILE_HEIGHT_IN_PIXELS, 0);int endY   = min(vEndY.lane[i]/TILE_HEIGHT_IN_PIXELS,                 SCREENH_IN_TILES-1);// Add triangle to the tiles or bins that the bounding box coversint row, col;for(row = startY; row <= endY; row++){    int offset1 = YOFFSET1_MT * row;    int offset2 = YOFFSET2_MT * row;    for(col = startX; col <= endX; col++)    {        // ...    }}
+    // Convert bounding box in terms of pixels to bounding box
+    // in terms of tiles
+    int startX = max(vStartX.lane[i]/TILE_WIDTH_IN_PIXELS, 0);
+    int endX   = min(vEndX.lane[i]/TILE_WIDTH_IN_PIXELS,
+                     SCREENW_IN_TILES-1);
+
+    int startY = max(vStartY.lane[i]/TILE_HEIGHT_IN_PIXELS, 0);
+    int endY   = min(vEndY.lane[i]/TILE_HEIGHT_IN_PIXELS,
+                     SCREENH_IN_TILES-1);
+
+    // Add triangle to the tiles or bins that the bounding box covers
+    int row, col;
+    for(row = startY; row <= endY; row++)
+    {
+        int offset1 = YOFFSET1_MT * row;
+        int offset2 = YOFFSET2_MT * row;
+        for(col = startX; col <= endX; col++)
+        {
+            // ...
+        }
+    }
 
 And in this loop, the triangles get added to the corresponding bins. So
 the bug must be somewhere in here. Can you figure out what's going on?
@@ -1039,9 +1125,10 @@ is somewhat awkward to express in code, and I went for the simpler
 option: just check whether the bounding rectangle is empty before we
 even do the divide.
 
-::
+.. code-block:: c++
 
-    if(vEndX.lane[i] < vStartX.lane[i] ||   vEndY.lane[i] < vStartY.lane[i]) continue;
+    if(vEndX.lane[i] < vStartX.lane[i] ||
+       vEndY.lane[i] < vStartY.lane[i]) continue;
 
 And there's another problem with the code as-is: There's an off-by-one
 error. Suppose we have a triangle with ``maxX=99``. Then we'll compute
@@ -3012,7 +3099,7 @@ modifications so it's easier to "opt out" from.
 That said, the change itself is really easy to make now: only do our
 current computation
 
-::
+.. code-block:: c++
 
     VecF32 depth = zz[0] + itof(beta) * zz[1] + itof(gama) * zz[2];
 
@@ -3021,14 +3108,14 @@ doing this properly requires changing the code a little bit, because the
 original code overwrites ``depth`` with the value we store to the depth
 buffer, but that's easily changed):
 
-::
+.. code-block:: c++
 
     depth += zx;
 
 just like the edge equations themselves, where ``zx`` can be computed at
 setup time as
 
-::
+.. code-block:: c++
 
     VecF32 zx = itof(aa1Inc) * zz[1] + itof(aa2Inc) * zz[2];
 

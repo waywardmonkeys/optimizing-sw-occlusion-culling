@@ -43,18 +43,24 @@ statistics at the end of the run. For both the rendering time and the
 occlusion test time, I print out the minimum, 25th percentile, median,
 75th percentile and maximum of all observed values, together with the
 mean and standard deviation. This should give us a good idea of how
-these values are distributed. Here's a first run:
+these values are distributed. Here's a first run::
 
-::
-
-    Render time:  min=3.400ms  25th=3.442ms  med=3.459ms  75th=3.473ms  max=3.545ms  mean=3.459ms sdev=0.024msTest time:  min=1.653ms  25th=1.875ms  med=1.964ms  75th=2.036ms  max=2.220ms  mean=1.957ms sdev=0.108ms
+    Render time:
+      min=3.400ms  25th=3.442ms  med=3.459ms  75th=3.473ms  max=3.545ms
+      mean=3.459ms sdev=0.024ms
+    Test time:
+      min=1.653ms  25th=1.875ms  med=1.964ms  75th=2.036ms  max=2.220ms
+      mean=1.957ms sdev=0.108ms
 
 and here's a second run on the same code (and needless to say, the same
-machine) to test how repeatable these results are:
+machine) to test how repeatable these results are::
 
-::
-
-    Render time:  min=3.367ms  25th=3.420ms  med=3.432ms  75th=3.445ms  max=3.512ms  mean=3.433ms sdev=0.021msTest time:  min=1.586ms  25th=1.870ms  med=1.958ms  75th=2.025ms  max=2.211ms  mean=1.941ms sdev=0.119ms
+    Render time:
+      min=3.367ms  25th=3.420ms  med=3.432ms  75th=3.445ms  max=3.512ms
+      mean=3.433ms sdev=0.021ms
+    Test time:
+      min=1.586ms  25th=1.870ms  med=1.958ms  75th=2.025ms  max=2.211ms
+      mean=1.941ms sdev=0.119ms
 
 As you can see, the two runs are within about 1% of each other for all
 the measurements - good enough for our purposes, at least right now.
@@ -268,9 +274,20 @@ might've noticed that the code checks the variable
 example is `this passage`_ that loads the current depth buffer values at
 the target location:
 
-::
+.. code-block:: c++
 
-    __m128 previousDepthValue;if(gVisualizeDepthBuffer){    previousDepthValue = _mm_set_ps(pDepthBuffer[idx],        pDepthBuffer[idx + 1],        pDepthBuffer[idx + SCREENW],        pDepthBuffer[idx + SCREENW + 1]);}else{    previousDepthValue = *(__m128*)&pDepthBuffer[idx];}
+    __m128 previousDepthValue;
+    if(gVisualizeDepthBuffer)
+    {
+        previousDepthValue = _mm_set_ps(pDepthBuffer[idx],
+            pDepthBuffer[idx + 1],
+            pDepthBuffer[idx + SCREENW],
+            pDepthBuffer[idx + SCREENW + 1]);
+    }
+    else
+    {
+        previousDepthValue = *(__m128*)&pDepthBuffer[idx];
+    }
 
 I briefly mentioned this last time: this rasterizer processes blocks of
 2x2 pixels at a time. If depth buffer visualization is on, the depth
@@ -613,9 +630,41 @@ Let me show you the whole inner loop (with some cosmetic changes so it
 fits in the layout, damn those overlong Intel SSE intrinsics) so you can
 see what I'm talking about:
 
-::
+.. code-block:: c++
 
-    for(int c = startXx; c < endXx;        c += 2,        idx += 4,        alpha = _mm_add_epi32(alpha, aa0Inc),        beta  = _mm_add_epi32(beta, aa1Inc),        gama  = _mm_add_epi32(gama, aa2Inc)){    // Test Pixel inside triangle    __m128i mask = _mm_cmplt_epi32(fxptZero,         _mm_or_si128(_mm_or_si128(alpha, beta), gama));                     // Early out if all of this quad's pixels are    // outside the triangle.    if(_mm_test_all_zeros(mask, mask))        continue;                     // Compute barycentric-interpolated depth    __m128 betaf = _mm_cvtepi32_ps(beta);    __m128 gamaf = _mm_cvtepi32_ps(gama);    __m128 depth = _mm_mul_ps(_mm_cvtepi32_ps(alpha), zz[0]);    depth = _mm_add_ps(depth, _mm_mul_ps(betaf, zz[1]));    depth = _mm_add_ps(depth, _mm_mul_ps(gamaf, zz[2]));    __m128 previousDepthValue = *(__m128*)&pDepthBuffer[idx];    __m128 depthMask = _mm_cmpge_ps(depth, previousDepthValue);    __m128i finalMask = _mm_and_si128(mask,        _mm_castps_si128(depthMask));    depth = _mm_blendv_ps(previousDepthValue, depth,        _mm_castsi128_ps(finalMask));    _mm_store_ps(&pDepthBuffer[idx], depth);}
+    for(int c = startXx; c < endXx;
+            c += 2,
+            idx += 4,
+            alpha = _mm_add_epi32(alpha, aa0Inc),
+            beta  = _mm_add_epi32(beta, aa1Inc),
+            gama  = _mm_add_epi32(gama, aa2Inc))
+    {
+        // Test Pixel inside triangle
+        __m128i mask = _mm_cmplt_epi32(fxptZero, 
+            _mm_or_si128(_mm_or_si128(alpha, beta), gama));
+                        
+        // Early out if all of this quad's pixels are
+        // outside the triangle.
+        if(_mm_test_all_zeros(mask, mask))
+            continue;
+                        
+        // Compute barycentric-interpolated depth
+        __m128 betaf = _mm_cvtepi32_ps(beta);
+        __m128 gamaf = _mm_cvtepi32_ps(gama);
+        __m128 depth = _mm_mul_ps(_mm_cvtepi32_ps(alpha), zz[0]);
+        depth = _mm_add_ps(depth, _mm_mul_ps(betaf, zz[1]));
+        depth = _mm_add_ps(depth, _mm_mul_ps(gamaf, zz[2]));
+
+        __m128 previousDepthValue = *(__m128*)&pDepthBuffer[idx];
+
+        __m128 depthMask = _mm_cmpge_ps(depth, previousDepthValue);
+        __m128i finalMask = _mm_and_si128(mask,
+            _mm_castps_si128(depthMask));
+
+        depth = _mm_blendv_ps(previousDepthValue, depth,
+            _mm_castsi128_ps(finalMask));
+        _mm_store_ps(&pDepthBuffer[idx], depth);
+    }
 
 As I said last time, we expect at least 50% of the pixels inside an
 average triangle's bounding box to be outside the triangle. This loop
@@ -649,7 +698,7 @@ difference whether we write ``x >= 0`` or ``x > 0``. And the condition
 ``x >= 0``, we can implement by simply checking whether the sign bit is
 zero. Whew! Okay, so we get:
 
-::
+.. code-block:: c++
 
     __m128i mask = _mm_or_si128(_mm_or_si128(alpha, beta), gama));
 
@@ -659,7 +708,7 @@ should early-out is ``PTEST``, which already performs a binary AND. And
 it also turns out that the check we need ("are the sign bits set for all
 four lanes?") can be implemented using the very same instruction:
 
-::
+.. code-block:: c++
 
     if(_mm_testc_si128(_mm_set1_epi32(0x80000000), mask))
 
@@ -673,9 +722,10 @@ one indicates "inside" and which one means "outside". Lucky for us,
 that's easily remedied in the computation of ``finalMask``, still only
 by changing ops without adding any:
 
-::
+.. code-block:: c++
 
-    __m128i finalMask = _mm_andnot_si128(mask,    _mm_castps_si128(depthMask));
+    __m128i finalMask = _mm_andnot_si128(mask,
+        _mm_castps_si128(depthMask));
 
 We simply use ``andnot`` instead of ``and``. Okay, I admit that was a
 bit of trouble to get rid of a single instruction, but this *is* a tight
@@ -1083,27 +1133,36 @@ multiply in the inner loop - two less instructions for a bit of extra
 setup work once per triangle. Namely, our per-triangle setup computation
 goes from
 
-::
+.. code-block:: c++
 
-    __m128 oneOverArea = _mm_set1_ps(oneOverTriArea.m128_f32[lane]);zz[0] *= oneOverArea;zz[1] *= oneOverArea;zz[2] *= oneOverArea;
+    __m128 oneOverArea = _mm_set1_ps(oneOverTriArea.m128_f32[lane]);
+    zz[0] *= oneOverArea;
+    zz[1] *= oneOverArea;
+    zz[2] *= oneOverArea;
 
 to
 
-::
+.. code-block:: c++
 
-    __m128 oneOverArea = _mm_set1_ps(oneOverTriArea.m128_f32[lane]);zz[1] = (zz[1] - zz[0]) * oneOverArea;zz[2] = (zz[2] - zz[0]) * oneOverArea;
+    __m128 oneOverArea = _mm_set1_ps(oneOverTriArea.m128_f32[lane]);
+    zz[1] = (zz[1] - zz[0]) * oneOverArea;
+    zz[2] = (zz[2] - zz[0]) * oneOverArea;
 
 and our per-pixel interpolation goes from
 
-::
+.. code-block:: c++
 
-    __m128 depth = _mm_mul_ps(_mm_cvtepi32_ps(alpha), zz[0]);depth = _mm_add_ps(depth, _mm_mul_ps(betaf, zz[1]));depth = _mm_add_ps(depth, _mm_mul_ps(gamaf, zz[2]));
+    __m128 depth = _mm_mul_ps(_mm_cvtepi32_ps(alpha), zz[0]);
+    depth = _mm_add_ps(depth, _mm_mul_ps(betaf, zz[1]));
+    depth = _mm_add_ps(depth, _mm_mul_ps(gamaf, zz[2]));
 
 to
 
-::
+.. code-block:: c++
 
-    __m128 depth = zz[0];depth = _mm_add_ps(depth, _mm_mul_ps(betaf, zz[1]));depth = _mm_add_ps(depth, _mm_mul_ps(gamaf, zz[2]));
+    __m128 depth = zz[0];
+    depth = _mm_add_ps(depth, _mm_mul_ps(betaf, zz[1]));
+    depth = _mm_add_ps(depth, _mm_mul_ps(gamaf, zz[2]));
 
 And what do our timings say?
 
@@ -1565,9 +1624,16 @@ Finally, there's another place where we can make a difference by better
 instruction selection. Our current depth buffer update code looks as
 follows:
 
-::
+.. code-block:: c++
 
-        __m128 previousDepthValue = *(__m128*)&pDepthBuffer[idx];    __m128 depthMask = _mm_cmpge_ps(depth, previousDepthValue);    __m128i finalMask = _mm_andnot_si128(mask,        _mm_castps_si128(depthMask));    depth = _mm_blendv_ps(previousDepthValue, depth,        _mm_castsi128_ps(finalMask));
+    __m128 previousDepthValue = *(__m128*)&pDepthBuffer[idx];
+
+    __m128 depthMask = _mm_cmpge_ps(depth, previousDepthValue);
+    __m128i finalMask = _mm_andnot_si128(mask,
+        _mm_castps_si128(depthMask));
+
+    depth = _mm_blendv_ps(previousDepthValue, depth,
+        _mm_castsi128_ps(finalMask));
 
 ``finalMask`` here is a mask that encodes "pixel lies inside the
 triangle AND has a larger depth value than the previous pixel at that
@@ -1578,9 +1644,12 @@ better, because SSE provides ``MAXPS``, which directly computes the
 maximum of two floating-point numbers. Using max, we can rewrite this
 expression to read:
 
-::
+.. code-block:: c++
 
-        __m128 previousDepthValue = *(__m128*)&pDepthBuffer[idx];    __m128 mergedDepth = _mm_max_ps(depth, previousDepthValue);    depth = _mm_blendv_ps(mergedDepth, previousDepthValue,        _mm_castsi128_ps(mask));
+    __m128 previousDepthValue = *(__m128*)&pDepthBuffer[idx];
+    __m128 mergedDepth = _mm_max_ps(depth, previousDepthValue);
+    depth = _mm_blendv_ps(mergedDepth, previousDepthValue,
+        _mm_castsi128_ps(mask));
 
 This is a slightly different way to phrase the solution - "pick
 whichever is largest of the previous and the interpolated depth value,
@@ -2153,9 +2222,24 @@ per triangle.
 
 So let's look at our row loop:
 
-::
+.. code-block:: c++
 
-    for(int r = startYy; r < endYy;        r += 2,        row  = _mm_add_epi32(row, _mm_set1_epi32(2)),        rowIdx = rowIdx + 2 * SCREENW,        bb0Row = _mm_add_epi32(bb0Row, bb0Inc),        bb1Row = _mm_add_epi32(bb1Row, bb1Inc),        bb2Row = _mm_add_epi32(bb2Row, bb2Inc)){    // Compute barycentric coordinates     int idx = rowIdx;    __m128i alpha = _mm_add_epi32(aa0Col, bb0Row);    __m128i beta = _mm_add_epi32(aa1Col, bb1Row);    __m128i gama = _mm_add_epi32(aa2Col, bb2Row);    // <Column loop here>}
+    for(int r = startYy; r < endYy;
+            r += 2,
+            row  = _mm_add_epi32(row, _mm_set1_epi32(2)),
+            rowIdx = rowIdx + 2 * SCREENW,
+            bb0Row = _mm_add_epi32(bb0Row, bb0Inc),
+            bb1Row = _mm_add_epi32(bb1Row, bb1Inc),
+            bb2Row = _mm_add_epi32(bb2Row, bb2Inc))
+    {
+        // Compute barycentric coordinates 
+        int idx = rowIdx;
+        __m128i alpha = _mm_add_epi32(aa0Col, bb0Row);
+        __m128i beta = _mm_add_epi32(aa1Col, bb1Row);
+        __m128i gama = _mm_add_epi32(aa2Col, bb2Row);
+
+        // <Column loop here>
+    }
 
 Okay, we don't even need to get fancy here - there's two things that
 immediately come to mind. First, we seem to be updating ``row`` even
@@ -2171,15 +2255,31 @@ additions once per triangle!
 
 So before the loop, we add:
 
-::
+.. code-block:: c++
 
-        __m128i sum0Row = _mm_add_epi32(aa0Col, bb0Row);    __m128i sum1Row = _mm_add_epi32(aa1Col, bb1Row);    __m128i sum2Row = _mm_add_epi32(aa2Col, bb2Row);
+    __m128i sum0Row = _mm_add_epi32(aa0Col, bb0Row);
+    __m128i sum1Row = _mm_add_epi32(aa1Col, bb1Row);
+    __m128i sum2Row = _mm_add_epi32(aa2Col, bb2Row);
 
 and then we change the row loop itself to read:
 
-::
+.. code-block:: c++
 
-    for(int r = startYy; r < endYy;        r += 2,        rowIdx = rowIdx + 2 * SCREENW,        sum0Row = _mm_add_epi32(sum0Row, bb0Inc),        sum1Row = _mm_add_epi32(sum1Row, bb1Inc),        sum2Row = _mm_add_epi32(sum2Row, bb2Inc)){    // Compute barycentric coordinates     int idx = rowIdx;    __m128i alpha = sum0Row;    __m128i beta = sum1Row;    __m128i gama = sum2Row;    // <Column loop here>}
+    for(int r = startYy; r < endYy;
+            r += 2,
+            rowIdx = rowIdx + 2 * SCREENW,
+            sum0Row = _mm_add_epi32(sum0Row, bb0Inc),
+            sum1Row = _mm_add_epi32(sum1Row, bb1Inc),
+            sum2Row = _mm_add_epi32(sum2Row, bb2Inc))
+    {
+        // Compute barycentric coordinates 
+        int idx = rowIdx;
+        __m128i alpha = sum0Row;
+        __m128i beta = sum1Row;
+        __m128i gama = sum2Row;
+
+        // <Column loop here>
+    }
 
 That's probably the most straightforward of all the changes we've seen
 so far. But still, it's in an outer loop, so we wouldn't expect to get

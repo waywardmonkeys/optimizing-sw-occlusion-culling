@@ -436,9 +436,17 @@ screenshot:
 The former shouldn't come as a surprise, since it's explicit in the
 code:
 
-::
+.. code-block:: c++
 
-    gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::TransformMeshes, this,    NUM_XFORMVERTS_TASKS, NULL, 0, "Xform Vertices", &mXformMesh);gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::BinTransformedMeshes, this,    NUM_XFORMVERTS_TASKS, &mXformMesh, 1, "Bin Meshes", &mBinMesh);gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::RasterizeBinnedTrianglesToDepthBuffer, this,    NUM_TILES, &mBinMesh, 1, "Raster Tris to DB", &mRasterize);    // Wait for the task setgTaskMgr.WaitForSet(mRasterize);
+    gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::TransformMeshes, this,
+        NUM_XFORMVERTS_TASKS, NULL, 0, "Xform Vertices", &mXformMesh);
+    gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::BinTransformedMeshes, this,
+        NUM_XFORMVERTS_TASKS, &mXformMesh, 1, "Bin Meshes", &mBinMesh);
+    gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::RasterizeBinnedTrianglesToDepthBuffer, this,
+        NUM_TILES, &mBinMesh, 1, "Raster Tris to DB", &mRasterize);   
+
+    // Wait for the task set
+    gTaskMgr.WaitForSet(mRasterize);
 
 What the screenshot does show us, however, is the cost of those
 synchronization points. There sure is a lot of "air" in that diagram,
@@ -447,9 +455,28 @@ second point is more of a surprise though, because the code does in fact
 try pretty hard to make sure the tasks are evenly sized. There's a
 problem, though:
 
-::
+.. code-block:: c++
 
-    void TransformedModelSSE::TransformMeshes(...){    if(mVisible)    {        // compute mTooSmall        if(!mTooSmall)        {            // transform verts        }    }}void TransformedModelSSE::BinTransformedTrianglesMT(...){    if(mVisible && !mTooSmall)    {        // bin triangles    }}
+    void TransformedModelSSE::TransformMeshes(...)
+    {
+        if(mVisible)
+        {
+            // compute mTooSmall
+
+            if(!mTooSmall)
+            {
+                // transform verts
+            }
+        }
+    }
+
+    void TransformedModelSSE::BinTransformedTrianglesMT(...)
+    {
+        if(mVisible && !mTooSmall)
+        {
+            // bin triangles
+        }
+    }
 
 Just because we make sure each task handles an equal number of vertices
 (as happens for the "TransformMeshes" tasks) or an equal number of
@@ -477,15 +504,31 @@ the individual transform and binning tasks.
 This is easy to do: ``DepthBufferRasterizerSSE`` gets a few more member
 variables
 
-::
+.. code-block:: c++
 
-    UINT *mpModelIndexA; // 'active' models = visible and not too smallUINT mNumModelsA;UINT mNumVerticesA;UINT mNumTrianglesA;
+    UINT *mpModelIndexA; // 'active' models = visible and not too small
+    UINT mNumModelsA;
+    UINT mNumVerticesA;
+    UINT mNumTrianglesA;
 
 and two new member functions
 
-::
+.. code-block:: c++
 
-    inline void ResetActive(){    mNumModelsA = mNumVerticesA = mNumTrianglesA = 0;}inline void Activate(UINT modelId){    UINT activeId = mNumModelsA++;    assert(activeId < mNumModels1);    mpModelIndexA[activeId] = modelId;    mNumVerticesA += mpStartV1[modelId + 1] - mpStartV1[modelId];    mNumTrianglesA += mpStartT1[modelId + 1] - mpStartT1[modelId];}
+    inline void ResetActive()
+    {
+        mNumModelsA = mNumVerticesA = mNumTrianglesA = 0;
+    }
+
+    inline void Activate(UINT modelId)
+    {
+        UINT activeId = mNumModelsA++;
+        assert(activeId < mNumModels1);
+
+        mpModelIndexA[activeId] = modelId;
+        mNumVerticesA += mpStartV1[modelId + 1] - mpStartV1[modelId];
+        mNumTrianglesA += mpStartT1[modelId + 1] - mpStartT1[modelId];
+    }
 
 that handle the accounting. The depth buffer rasterizer already kept
 cumulative vertex and triangle counts for all models; I added one more
@@ -495,9 +538,13 @@ vertex/triangle-counting logic.
 Then, at the end of the ``IsVisible`` pass (after the worker threads are
 done), I run
 
-::
+.. code-block:: c++
 
-    // Determine which models are activeResetActive();for (UINT i=0; i < mNumModels1; i++)    if(mpTransformedModels1[i].IsRasterized2DB())        Activate(i);
+    // Determine which models are active
+    ResetActive();
+    for (UINT i=0; i < mNumModels1; i++)
+        if(mpTransformedModels1[i].IsRasterized2DB())
+            Activate(i);
 
 where ``IsRasterized2DB()`` is just a predicate that returns
 ``mIsVisible && !mTooSmall`` (it was already there, so I used it).
@@ -506,15 +553,19 @@ After that, all that remains is distributing work over the active models
 only, using ``mNumVerticesA`` and ``mNumTrianglesA``. This is as simple
 as turning the original loop in ``TransformMeshes``
 
-::
+.. code-block:: c++
 
     for(UINT ss = 0; ss < mNumModels1; ss++)
 
 into
 
-::
+.. code-block:: c++
 
-    for(UINT active = 0; active < mNumModelsA; active++){    UINT ss = mpModelIndexA[active];    // ...}
+    for(UINT active = 0; active < mNumModelsA; active++)
+    {
+        UINT ss = mpModelIndexA[active];
+        // ...
+    }
 
 and the same for ``BinTransformedMeshes``. All in all, this took me
 about 10 minutes to write, debug and test. And with that, we should have
@@ -839,24 +890,54 @@ So what we do is insert a single task between
 binning and rasterization that determines the right order to process the
 tiles in, then make the actual rasterization depend on it:
 
-::
+.. code-block:: c++
 
-    gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::BinSort, this,    1, &mBinMesh, 1, "BinSort", &sortBins);gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::RasterizeBinnedTrianglesToDepthBuffer,    this, NUM_TILES, &sortBins, 1, "Raster Tris to DB", &mRasterize);   
+    gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::BinSort, this,
+        1, &mBinMesh, 1, "BinSort", &sortBins);
+    gTaskMgr.CreateTaskSet(&DepthBufferRasterizerSSEMT::RasterizeBinnedTrianglesToDepthBuffer,
+        this, NUM_TILES, &sortBins, 1, "Raster Tris to DB", &mRasterize);
 
 So how does that function look? Well, all we have to do is count how
 many triangles ended up in each triangle, and then sort the tiles by
 that. The function is so short I'm just gonna show you the whole thing:
 
-::
+.. code-block:: c++
 
-    void DepthBufferRasterizerSSEMT::BinSort(VOID* taskData,    INT context, UINT taskId, UINT taskCount){    DepthBufferRasterizerSSEMT* me =        (DepthBufferRasterizerSSEMT*)taskData;    // Initialize sequence in identity order and compute total    // number of triangles in the bins for each tile    UINT tileTotalTris[NUM_TILES];    for(UINT tile = 0; tile < NUM_TILES; tile++)    {        me->mTileSequence[tile] = tile;        UINT base = tile * NUM_XFORMVERTS_TASKS;        UINT numTris = 0;        for (UINT bin = 0; bin < NUM_XFORMVERTS_TASKS; bin++)            numTris += me->mpNumTrisInBin[base + bin];        tileTotalTris[tile] = numTris;    }    // Sort tiles by number of triangles, decreasing.    std::sort(me->mTileSequence, me->mTileSequence + NUM_TILES,        [&](const UINT a, const UINT b)        {            return tileTotalTris[a] > tileTotalTris[b];         });}
+    void DepthBufferRasterizerSSEMT::BinSort(VOID* taskData,
+        INT context, UINT taskId, UINT taskCount)
+    {
+        DepthBufferRasterizerSSEMT* me =
+            (DepthBufferRasterizerSSEMT*)taskData;
+
+        // Initialize sequence in identity order and compute total
+        // number of triangles in the bins for each tile
+        UINT tileTotalTris[NUM_TILES];
+        for(UINT tile = 0; tile < NUM_TILES; tile++)
+        {
+            me->mTileSequence[tile] = tile;
+
+            UINT base = tile * NUM_XFORMVERTS_TASKS;
+            UINT numTris = 0;
+            for (UINT bin = 0; bin < NUM_XFORMVERTS_TASKS; bin++)
+                numTris += me->mpNumTrisInBin[base + bin];
+
+            tileTotalTris[tile] = numTris;
+        }
+
+        // Sort tiles by number of triangles, decreasing.
+        std::sort(me->mTileSequence, me->mTileSequence + NUM_TILES,
+            [&](const UINT a, const UINT b)
+            {
+                return tileTotalTris[a] > tileTotalTris[b]; 
+            });
+    }
 
 where ``mTileSequence`` is just an array of ``UINT``\ s with
 ``NUM_TILES`` elements. Then we just rename the ``taskId`` parameter of
 ``RasterizeBinnedTrianglesToDepthBuffer`` to ``rawTaskId`` and start the
 function like this:
 
-::
+.. code-block:: c++
 
         UINT taskId = mTileSequence[rawTaskId];
 

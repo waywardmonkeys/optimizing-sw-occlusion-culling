@@ -42,9 +42,18 @@ So, what can we do to use less resources? There's lots of options, but
 one thing I had noticed while measuring loading time is that there's one
 dynamic constant buffer per model:
 
-::
+.. code-block:: c++
 
-    // Create the model constant buffer.HRESULT hr;D3D11_BUFFER_DESC bd = {0};bd.ByteWidth = sizeof(CPUTModelConstantBuffer);bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;bd.Usage = D3D11_USAGE_DYNAMIC;bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;hr = (CPUT_DX11::GetDevice())->CreateBuffer( &bd, NULL,    &mpModelConstantBuffer );ASSERT( !FAILED( hr ), _L("Error creating constant buffer.") );
+    // Create the model constant buffer.
+    HRESULT hr;
+    D3D11_BUFFER_DESC bd = {0};
+    bd.ByteWidth = sizeof(CPUTModelConstantBuffer);
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bd.Usage = D3D11_USAGE_DYNAMIC;
+    bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    hr = (CPUT_DX11::GetDevice())->CreateBuffer( &bd, NULL,
+        &mpModelConstantBuffer );
+    ASSERT( !FAILED( hr ), _L("Error creating constant buffer.") );
 
 Note that they're all the same size, and it turns out that all of them
 get updated (using a ``Map`` with ``DISCARD``) immediately before they
@@ -820,9 +829,37 @@ function is ``AABBoxRasterizerSSE::RenderVisible``, which uses the
 (post-occlusion-test) visibility information to render all visible
 models. Here's the code:
 
-::
+.. code-block:: c++
 
-    void AABBoxRasterizerSSE::RenderVisible(CPUTAssetSet **pAssetSet,    CPUTRenderParametersDX &renderParams,    UINT numAssetSets){    int count = 0;    for(UINT assetId = 0, modelId = 0; assetId < numAssetSets; assetId++)    {        for(UINT nodeId = 0; nodeId < GetAssetCount(); nodeId++)        {            CPUTRenderNode* pRenderNode = NULL;            CPUTResult result = pAssetSet[assetId]->GetAssetByIndex(nodeId, &pRenderNode);            ASSERT((CPUT_SUCCESS == result), _L ("Failed getting asset by index"));             if(pRenderNode->IsModel())            {                if(mpVisible[modelId])                {                    CPUTModelDX11* model = (CPUTModelDX11*)pRenderNode;                    model = (CPUTModelDX11*)pRenderNode;                    model->Render(renderParams);                    count++;                }                modelId++;                     }            pRenderNode->Release();        }    }    mNumCulled =  mNumModels - count;}
+    void AABBoxRasterizerSSE::RenderVisible(CPUTAssetSet **pAssetSet,
+        CPUTRenderParametersDX &renderParams,
+        UINT numAssetSets)
+    {
+        int count = 0;
+
+        for(UINT assetId = 0, modelId = 0; assetId < numAssetSets; assetId++)
+        {
+            for(UINT nodeId = 0; nodeId < GetAssetCount(); nodeId++)
+            {
+                CPUTRenderNode* pRenderNode = NULL;
+                CPUTResult result = pAssetSet[assetId]->GetAssetByIndex(nodeId, &pRenderNode);
+                ASSERT((CPUT_SUCCESS == result), _L ("Failed getting asset by index")); 
+                if(pRenderNode->IsModel())
+                {
+                    if(mpVisible[modelId])
+                    {
+                        CPUTModelDX11* model = (CPUTModelDX11*)pRenderNode;
+                        model = (CPUTModelDX11*)pRenderNode;
+                        model->Render(renderParams);
+                        count++;
+                    }
+                    modelId++;          
+                }
+                pRenderNode->Release();
+            }
+        }
+        mNumCulled =  mNumModels - count;
+    }
 
 This code first enumerates all ``RenderNodes`` (a base class) in the
 active asset libraries, ask each of them "are you a model?", and if so
@@ -842,9 +879,25 @@ culling pass; all we have to do is set an extra array that maps
 ``modelId``\ s to the corresponding models. Then the actual rendering
 code turns into:
 
-::
+.. code-block:: c++
 
-    void AABBoxRasterizerSSE::RenderVisible(CPUTAssetSet **pAssetSet,    CPUTRenderParametersDX &renderParams,    UINT numAssetSets){    int count = 0;    for(modelId = 0; modelId < mNumModels; modelId++)    {        if(mpVisible[modelId])        {            mpModels[modelId]->Render(renderParams);            count++;        }    }    mNumCulled =  mNumModels - count;}
+    void AABBoxRasterizerSSE::RenderVisible(CPUTAssetSet **pAssetSet,
+        CPUTRenderParametersDX &renderParams,
+        UINT numAssetSets)
+    {
+        int count = 0;
+
+        for(modelId = 0; modelId < mNumModels; modelId++)
+        {
+            if(mpVisible[modelId])
+            {
+                mpModels[modelId]->Render(renderParams);
+                count++;
+            }
+        }
+
+        mNumCulled =  mNumModels - count;
+    }
 
 That already looks much better. But how much does it help?
 

@@ -32,7 +32,6 @@ arguments to see which formats are available.
 TODO
 ----
 
-* Code blocks all need to be fixed.
 * Tables need to be converted to ReStructuredText syntax.
 * Latex math needs to be using the right syntax.
 * Some images should probably be figures.
